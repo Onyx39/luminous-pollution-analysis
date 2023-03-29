@@ -17,7 +17,7 @@ footprint = geojson_to_wkt(studied_area)
 product_type = 'S2MSI1C'
 # product_type = 'S2MSI1A'
 # product_type = 'S2MSI1B'
-processing_level = "Level-AB"
+processing_level = "Level-1C"
 
 # products = api.query(footprint, date=('NOW-60DAYS', 'NOW'), platformname='Sentinel-2', producttype=product_type)
 products = api.query(footprint, date=('NOW-14DAYS', 'NOW'), platformname='Sentinel-2', processinglevel=processing_level)
