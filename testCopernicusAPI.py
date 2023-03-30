@@ -3,9 +3,11 @@ from dotenv import load_dotenv
 import os
 import logging
 import zipfile
-
+import numpy as np
+import rasterio
 # Loading preferences 
-
+from rasterio.plot import show
+import matplotlib.pyplot as plt
 load_dotenv('.env')
 logging.basicConfig(filename="event.log", encoding="utf-8", level=logging.DEBUG, filemode="w")
 
@@ -39,7 +41,7 @@ if download_required:
 
 # Extracting some file of the archive
 
-files_to_extract = ["B04", "B08"]
+files_to_extract = ["B04", "B08","B02","B03"]
 folder_name = studied_area["properties"]["nom"]
 
 try:
@@ -53,3 +55,38 @@ for zip_file_path in needed_files :
             for file_name in files_to_extract:
                 if file_name in zf.filename:
                     zip_file.extract(zf.filename, path=folder_name)
+
+
+# Define function to calculate NDVI
+def ndvi(red_band, nir_band):
+    """Calculate NDVI from red and near-infrared bands"""
+    np.seterr(divide='ignore', invalid='ignore')
+    return (nir_band - red_band) / (nir_band + red_band)
+
+# Define function to read band data
+def read_band(band_path):
+    """Read band data from file"""
+    with rasterio.open(band_path) as src:
+        band_data = src.read(1)
+    return band_data
+
+# Define paths to red and near-infrared bands
+red_band_path = "Haute-Savoie\S2B_MSIL1C_20230305T102829_N0509_R108_T31TGL_20230305T140925.SAFE\GRANULE\L1C_T31TGL_A031308_20230305T103700\IMG_DATA\T31TGL_20230305T102829_B04.jp2"
+nir_band_path = "Haute-Savoie\S2B_MSIL1C_20230305T102829_N0509_R108_T31TGL_20230305T140925.SAFE\GRANULE\L1C_T31TGL_A031308_20230305T103700\IMG_DATA\T31TGL_20230305T102829_B08.jp2"
+
+blue_path="Haute-Savoie\S2B_MSIL1C_20230305T102829_N0509_R108_T31TGL_20230305T140925.SAFE\GRANULE\L1C_T31TGL_A031308_20230305T103700\IMG_DATA\T31TGL_20230305T102829_B02.jp2"
+green_path="Haute-Savoie\S2B_MSIL1C_20230305T102829_N0509_R108_T31TGL_20230305T140925.SAFE\GRANULE\L1C_T31TGL_A031308_20230305T103700\IMG_DATA\T31TGL_20230305T102829_B03.jp2"
+
+# Read red and near-infrared bands
+red_band = read_band(red_band_path)
+nir_band = read_band(nir_band_path)
+green_band=read_band(green_path)
+blue_band=read_band(blue_path)
+# Calculate NDVI
+ndvi_band = ndvi(red_band, nir_band)
+luminance_data = 0.2126 * red_band + 0.7152 * green_band+ 0.0722 * blue_band
+
+
+# Plot the NDVI image and save it as a PNG file
+show(ndvi_band, cmap='jet', vmin=-1, vmax=1)
+show(luminance_data,cmap='jet')
