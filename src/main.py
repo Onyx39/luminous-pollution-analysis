@@ -5,32 +5,30 @@ import json
 # https://www.data.gouv.fr/fr/datasets/forets-publiques-diffusion-publique-1/
 # (the first on the page : FOR_PUBL_FR), put in in data_forest
 
-def quadri (nom_foret) : 
+def get_forest_file () : 
     f = open("data_forest/FOR_PUBL_FR.json")
     data = json.load(f)
 
-    for i in data["features"]: 
-        if i["properties"]["llib_frt"] == nom_foret :
-            print("Forêt communale d'Annecy-Annecy-Le-Vieux")
-            coor = i["geometry"]["coordinates"]
-            break
-    
-    point_cardinaux = [coor[0][0][0][0], coor[0][0][0][0], coor[0][0][0][1], coor[0][0][0][1]]
-    for i in coor[0][0] : 
-        if i[0] < point_cardinaux[0] :
-            point_cardinaux[0] = i[0]
-        if i[0] > point_cardinaux[1] :
-            point_cardinaux[1] = i[0]
-        if i[1] < point_cardinaux[2] :
-            point_cardinaux[2] = i[1]
-        if i[1] > point_cardinaux[3] :
-            point_cardinaux[3] = i[1]
-    for i in range(len(point_cardinaux)) :
-         point_cardinaux[i] = point_cardinaux[i] - 0.0001
-    print(point_cardinaux)
+    forest_list = []
 
-    polygon = {"type" : "Feature", 
-                "geometry" : {
+    for i in data["features"]: 
+        forest_list.append([i["properties"]["llib_frt"], i["geometry"]["coordinates"]])
+    
+    with open('data_forest/forests.json', 'a', encoding='utf-8') as json_file:
+        for j in forest_list : 
+            point_cardinaux = [j[1][0][0][0], j[1][0][0][0], j[1][0][0][1], j[1][0][0][1]]
+            for k in j[1][0] : 
+                if k[0] < point_cardinaux[0] :
+                    point_cardinaux[0] = k[0]
+                if k[0] > point_cardinaux[1] :
+                    point_cardinaux[1] = k[0]
+                if k[1] < point_cardinaux[2] :
+                    point_cardinaux[2] = k[1]
+                if k[1] > point_cardinaux[3] :
+                    point_cardinaux[3] = k[1]
+
+            polygon = {"type" : "Feature", 
+                        "geometry" : {
                             "type" : "Polygon", 
                             "coordinates" : 
                             [
@@ -41,12 +39,16 @@ def quadri (nom_foret) :
                                     [point_cardinaux[1], point_cardinaux[2]]
                                 ]
                             ]
-                },
-                "properties" :  {
-                    "nom" : nom_foret
-                }
-                }
-    f.close()
-    return polygon
+                        },
+                        "properties" :  {
+                            "nom" : j[0]
+                        }
+                        }
+            json.dump(polygon, json_file,ensure_ascii=False)            
 
-print(quadri("Forêt communale d'Annecy-Annecy-Le-Vieux"))
+    f.close()
+
+    return True
+
+get_forest_file()
+
