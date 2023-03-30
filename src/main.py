@@ -10,11 +10,12 @@ def get_forest_file () :
     data = json.load(f)
 
     forest_list = []
+    polygon_list = []
 
     for i in data["features"]: 
         forest_list.append([i["properties"]["llib_frt"], i["geometry"]["coordinates"]])
     
-    with open('data_forest/forests.json', 'a', encoding='utf-8') as json_file:
+    with open('data_forest/forests.json', 'w', encoding='utf-8') as json_file:
         for j in forest_list : 
             point_cardinaux = [j[1][0][0][0], j[1][0][0][0], j[1][0][0][1], j[1][0][0][1]]
             for k in j[1][0] : 
@@ -44,7 +45,8 @@ def get_forest_file () :
                             "nom" : j[0]
                         }
                         }
-            json.dump(polygon, json_file,ensure_ascii=False)            
+            polygon_list.append(polygon)
+        json.dump(polygon_list, json_file,ensure_ascii=False)          
 
     f.close()
 
