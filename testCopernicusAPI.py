@@ -1,13 +1,15 @@
-from sentinelsat import SentinelAPI, read_geojson, geojson_to_wkt
-from dotenv import load_dotenv
 import os
 import logging
 import zipfile
+from dotenv import load_dotenv
+from sentinelsat import SentinelAPI, read_geojson, geojson_to_wkt
+
+
 import numpy as np
 import rasterio
-# Loading preferences 
 from rasterio.plot import show
 import matplotlib.pyplot as plt
+
 load_dotenv('.env')
 logging.basicConfig(filename="event.log", encoding="utf-8", level=logging.DEBUG, filemode="w")
 
@@ -20,7 +22,7 @@ CLOUD_COVERAGE_THRESHOLD = 30
 studied_area = read_geojson('c.geojson')
 
 footprint = geojson_to_wkt(studied_area)
-processing_level = "Level-1C"
+processing_level = "Level-2A"
 products = api.query(footprint, date=('NOW-30DAYS', 'NOW'), platformname='Sentinel-2', processinglevel=processing_level)
 
 # Filter per cloud coverage
@@ -71,11 +73,11 @@ def read_band(band_path):
     return band_data
 
 # Define paths to red and near-infrared bands
-red_band_path = "Haute-Savoie\S2B_MSIL1C_20230305T102829_N0509_R108_T31TGL_20230305T140925.SAFE\GRANULE\L1C_T31TGL_A031308_20230305T103700\IMG_DATA\T31TGL_20230305T102829_B04.jp2"
-nir_band_path = "Haute-Savoie\S2B_MSIL1C_20230305T102829_N0509_R108_T31TGL_20230305T140925.SAFE\GRANULE\L1C_T31TGL_A031308_20230305T103700\IMG_DATA\T31TGL_20230305T102829_B08.jp2"
+red_band_path = "Haute-Savoie\S2B_MSIL2A_20230305T102829_N0509_R108_T31TGL_20230305T151653.SAFE\GRANULE\L2A_T31TGL_A031308_20230305T103700\IMG_DATA\R10m\T31TGL_20230305T102829_B04_10m.jp2"
+nir_band_path = "Haute-Savoie\S2B_MSIL2A_20230305T102829_N0509_R108_T31TGL_20230305T151653.SAFE\GRANULE\L2A_T31TGL_A031308_20230305T103700\IMG_DATA\R10m\T31TGL_20230305T102829_B08_10m.jp2"
 
-blue_path="Haute-Savoie\S2B_MSIL1C_20230305T102829_N0509_R108_T31TGL_20230305T140925.SAFE\GRANULE\L1C_T31TGL_A031308_20230305T103700\IMG_DATA\T31TGL_20230305T102829_B02.jp2"
-green_path="Haute-Savoie\S2B_MSIL1C_20230305T102829_N0509_R108_T31TGL_20230305T140925.SAFE\GRANULE\L1C_T31TGL_A031308_20230305T103700\IMG_DATA\T31TGL_20230305T102829_B03.jp2"
+blue_path="Haute-Savoie\S2B_MSIL2A_20230305T102829_N0509_R108_T31TGL_20230305T151653.SAFE\GRANULE\L2A_T31TGL_A031308_20230305T103700\IMG_DATA\R10m\T31TGL_20230305T102829_B02_10m.jp2"
+green_path="Haute-Savoie\S2B_MSIL2A_20230305T102829_N0509_R108_T31TGL_20230305T151653.SAFE\GRANULE\L2A_T31TGL_A031308_20230305T103700\IMG_DATA\R10m\T31TGL_20230305T102829_B03_10m.jp2"
 
 # Read red and near-infrared bands
 red_band = read_band(red_band_path)
@@ -85,8 +87,10 @@ blue_band=read_band(blue_path)
 # Calculate NDVI
 ndvi_band = ndvi(red_band, nir_band)
 luminance_data = 0.2126 * red_band + 0.7152 * green_band+ 0.0722 * blue_band
+test_data=red_band+green_band+blue_band
 
 
 # Plot the NDVI image and save it as a PNG file
+show(test_data)
 show(ndvi_band, cmap='jet', vmin=-1, vmax=1)
-show(luminance_data,cmap='jet')
+show(luminance_data,cmap='jet_r')
