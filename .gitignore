@@ -2,3 +2,5 @@
 *.zip
 *.log
 FOR_PUBL_FR.json
+.venv
+__pycache__
