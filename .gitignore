@@ -1,6 +1,6 @@
 ########################
 # .gitignore Valentin
 FOR_PUBL_FR.json
-map.html
-tests.py
+simple_map.html
+full_map.html
 ########################

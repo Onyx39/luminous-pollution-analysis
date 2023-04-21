@@ -12,7 +12,7 @@ def reduce_shape(geometry, max_points=20):
     res = []
 
     for c in coords.exterior.coords:
-        res.append([c[0], c[1]])
+        res.append([c[1], c[0]])
     return res
 
 
