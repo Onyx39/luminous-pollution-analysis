@@ -15,13 +15,17 @@ from utils import get_bbox_from_geojson
 from json import loads
 import logging
 
-logging.basicConfig(filename="events.log", encoding="utf-8", level=logging.DEBUG, filemode="w")
+logging.basicConfig(filename="downloadForestImages.log", encoding="utf-8", level=logging.DEBUG, filemode="w")
 
 config = SHConfig()
 
 config.instance_id = INSTANCE_ID
 config.sh_client_id = CLIENT_ID
 config.sh_client_secret = USER_SECRET
+
+EVALSCRIPT_PATH = "ndvi.js"
+MAX_CLOUD_COVERAGE = 0.3
+IMAGE_RESOLUTION = 10
 
 evalscript = ""
 with open("evalscripts/"+EVALSCRIPT_PATH, "r", encoding="utf-8") as f:
@@ -35,7 +39,7 @@ for i in range(100):
     forest = all_forests[i]
     forest_name = forest["properties"]["nom"]
     print("Forest:", forest_name)
-    folder_name = "images/" + forest_name
+    folder_name = "imagesNDVI/" + forest_name
 
     try: 
         boundingbox = get_bbox_from_geojson(forest)
