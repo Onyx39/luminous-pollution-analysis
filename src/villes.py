@@ -1,20 +1,17 @@
 import json
+import pandas as pd
 
-df = open("luminous-pollution-analysis/data/ville_json/cities.json")
-data = json.load(df)
+all_departments = ["74", "39"]
+data = {}
+with open("../data/cities_json/cities.json") as file:
+    data = json.load(file)
 
+cities = data["cities"]
+cities_dataframe = pd.DataFrame(cities)
+cities_dataframe = cities_dataframe.drop(columns=["insee_code", "city_code", "department_name", "region_name", "region_geojson_name"])
+cities_filter = cities_dataframe["department_number"].isin(all_departments)
+cities_dataframe = cities_dataframe[cities_filter]
+output_json = json.loads(cities_dataframe.to_json(orient="records"))
 
-infos_villes = {"villes":[]}
-for city in data["cities"]:
-    ##print(city["city_code"])
-    ##print(city["latitude"])
-    ##print(city["longitude"])
-    if city["latitude"] != "" and city["latitude"] != "":
-        infos_villes["villes"].append([city["city_code"], float(city["latitude"]), float(city["longitude"])])
-    ##ville["infos"] = [city["city_code"], city["latitude"], city["longitude"]]
-
-
-json_object = json.dumps(infos_villes, indent = 4) 
-
-with open("luminous-pollution-analysis/data/ville_json/villes.json", "w") as write_file:
-    json.dump(infos_villes, write_file, indent=4)
+with open("../data/cities_json/cities_output.json", "w") as write_file:
+    json.dump(output_json, write_file, indent=4)
