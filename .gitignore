@@ -1,2 +1,7 @@
-FOR_PUBL_FR.json
+########################
+# .gitignore Valentin
 data/*
+FOR_PUBL_FR.json
+simple_map.html
+full_map.html
+########################
