@@ -3,109 +3,127 @@ from tqdm import tqdm
 from shapely.geometry import shape
 
 
-def reduce_shape(geometry, max_points=20):
-    coords = None
-    ratio = 0.001
+def reduce_shape(geometry, ratio=0.001) -> list[list[int]]:
+    """Reduce the number of points of the given shape
+    Returns: a list of coordinates
+    """
+    reduced_shape = geometry.simplify(
+            ratio, preserve_topology=True
+    )
 
-    coords = geometry.simplify(ratio, preserve_topology=True)
-
-    res = []
-
-    for c in coords.exterior.coords:
-        res.append([c[1], c[0]])
-    return res
+    # Inverting the coordinates
+    return [[c[1], c[0]] for c in reduced_shape.exterior.coords]
 
 
-def reduce_multi_shape(geometry):
+def reduce_multi_shape(geometry) -> list[list[list[int]]]:
+    """Applies the reduce shape function on a MultiPolygon
+    Returns: a list a reduced shape
+    """
     res = []
     for geom in geometry.geoms:
         res.append(reduce_shape(geom))
     return res
 
 
-def create_forest_file():
-    print("Importation des données...")
-    file = open("data_forest/FOR_PUBL_FR.json", encoding="utf-8")
-    data = json.load(file)
+def open_forest_file(path):
+    """Open forest file and return the list of forests"""
+    print("Reading data...")
+    with open(path, encoding="utf-8") as forest_file:
+        data = json.load(forest_file)
 
-    forest_list = []
+    return data["features"]
 
-    for i in data["features"]:
-        forest_list.append(
-                [i["properties"]["llib_frt"],
-                 i["geometry"]["coordinates"],
-                 i["geometry"]["type"],
-                 i["geometry"]])
 
-    print("Ecriture du fichier...")
+def treat_forest_data(forest):
+    """Treat a forest and return a Polygon containing the reduced_shape and a
+    square of the forest area"""
+    coordinates = forest["geometry"]["coordinates"]
+    if forest["geometry"]["type"] == "MultiPolygon":
+        liste_a_parcourir = []
+        for k in coordinates:
+            liste_a_parcourir += k[0]
+        point_cardinaux = [coordinates[0][0][0][0], coordinates[0][0][0][0],
+                           coordinates[0][0][0][1], coordinates[0][0][0][1]]
+
+    else:
+        liste_a_parcourir = coordinates[0]
+        point_cardinaux = [coordinates[0][0][0], coordinates[0][0][0],
+                           coordinates[0][0][1], coordinates[0][0][1]]
+
+    for k in liste_a_parcourir:
+        if k[0] < point_cardinaux[0]:
+            point_cardinaux[0] = k[0]
+        if k[0] > point_cardinaux[1]:
+            point_cardinaux[1] = k[0]
+        if k[1] < point_cardinaux[2]:
+            point_cardinaux[2] = k[1]
+        if k[1] > point_cardinaux[3]:
+            point_cardinaux[3] = k[1]
+
+    polygon = {
+        "type": "Feature",
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                            [
+                                [point_cardinaux[1],
+                                 point_cardinaux[3]],
+                                [point_cardinaux[0],
+                                 point_cardinaux[3]],
+                                [point_cardinaux[0],
+                                 point_cardinaux[2]],
+                                [point_cardinaux[1],
+                                 point_cardinaux[2]]
+                            ]
+                        ],
+                    },
+                "properties": {
+                    "nom": forest["properties"]["llib_frt"]
+                }
+            }
+
+    if forest["geometry"]["type"] == 'MultiPolygon':
+        polygon['geometry']['MultiShape'] = [
+            reduce_multi_shape(shape(forest["geometry"]))
+            ]
+    else:
+        polygon['geometry']['shape'] = [
+                reduce_shape(shape(forest["geometry"]))
+                ]
+
+    return polygon
+
+
+def write_json(forest_list):
+    """Write the new json forest"""
+    print("Writing the file...")
     with open('data_forest/forests.json', 'w', encoding='utf-8') as json_file:
         json_file.write("[\n")
-        compteur = 1
+
+        count = 1
         p_bar = tqdm(total=len(forest_list))
-        for j in forest_list:
-            if j[2] == "MultiPolygon":
-                liste_a_parcourir = []
-                for k in j[1]:
-                    liste_a_parcourir += k[0]
-                point_cardinaux = [j[1][0][0][0][0], j[1][0][0][0][0],
-                                   j[1][0][0][0][1], j[1][0][0][0][1]]
 
-            else:
-                liste_a_parcourir = j[1][0]
-                point_cardinaux = [j[1][0][0][0], j[1][0][0][0],
-                                   j[1][0][0][1], j[1][0][0][1]]
-
-            for k in liste_a_parcourir:
-                if k[0] < point_cardinaux[0]:
-                    point_cardinaux[0] = k[0]
-                if k[0] > point_cardinaux[1]:
-                    point_cardinaux[1] = k[0]
-                if k[1] < point_cardinaux[2]:
-                    point_cardinaux[2] = k[1]
-                if k[1] > point_cardinaux[3]:
-                    point_cardinaux[3] = k[1]
-
-            polygon = {
-                "type": "Feature",
-                        "geometry": {
-                            "type": "Polygon",
-                            "coordinates": [
-                                    [
-                                        [point_cardinaux[1],
-                                         point_cardinaux[3]],
-                                        [point_cardinaux[0],
-                                         point_cardinaux[3]],
-                                        [point_cardinaux[0],
-                                         point_cardinaux[2]],
-                                        [point_cardinaux[1],
-                                         point_cardinaux[2]]
-                                    ]
-                                ],
-                            },
-                        "properties": {
-                            "nom": j[0]
-                        }
-                    }
-
-            if j[2] == 'MultiPolygon':
-                polygon['geometry']['MultiShape'] = [
-                    reduce_multi_shape(shape(j[3]))
-                    ]
-            else:
-                polygon['geometry']['shape'] = [reduce_shape(shape(j[3]))]
+        for forest in forest_list:
+            polygon = treat_forest_data(forest)
 
             json.dump(polygon, json_file, ensure_ascii=False)
-            compteur += 1
-            if not compteur == len(forest_list) + 1:
+            count += 1
+            if not count == len(forest_list) + 1:
                 json_file.write(",\n")
             p_bar.update(1)
 
         json_file.write("\n]")
 
-    p_bar.close()
-    file.close()
-    print("Fin d'execution : Aucune erreur")
-    return True
+        p_bar.close()
+        print("Fin d'execution : Aucune erreur")
 
 
-create_forest_file()
+def main():
+    """Main function"""
+    forest_list = open_forest_file("data_forest/FOR_PUBL_FR.json")
+
+    write_json(forest_list)
+
+
+if __name__ == "__main__":
+    main()
