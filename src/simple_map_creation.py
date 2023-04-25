@@ -20,7 +20,7 @@ marker_style = {
         'fillOpacity': 0.5}
 
 print("Création des objets à placer sur la carte...")
-p_bar = tqdm(total = len(data))
+p_bar = tqdm(total=len(data))
 m = folium.Map(location=(46.61, 1.8586), zoom_start=6)
 for i in data:
     # print(i["properties"]["nom"])

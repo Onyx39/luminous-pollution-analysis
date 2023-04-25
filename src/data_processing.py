@@ -7,9 +7,10 @@ from typing import Callable
 def filter(lmbd: Callable, data: list) -> list:
     res = []
     for k in data:
-        if lmbd(k): 
+        if lmbd(k):
             res.append(k)
     return res
+
 
 def reduce_shape(geometry, ratio=0.001) -> list[list[int]]:
     """Reduce the number of points of the given shape
@@ -136,10 +137,9 @@ def main():
 data = []
 if __name__ == "__main__":
     main()
-    
-    #example of filter
-    #data = open_forest_file("data/data_forest/FOR_PUBL_FR.json")
 
-    #lmbd = lambda x: x["properties"]["cinse_dep"] == "39"
-    #res = filter(lmbd, data)
+    # example of filter
+    # data = open_forest_file("data/data_forest/FOR_PUBL_FR.json")
 
+    # lmbd = lambda x: x["properties"]["cinse_dep"] == "39"
+    # res = filter(lmbd, data)

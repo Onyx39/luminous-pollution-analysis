@@ -24,9 +24,9 @@ def reduce_multi_shape(geometry):
 
 
 def create_cities_file():
-    # Lien du doc de données : 
+    # Link of the data:
     # https://github.com/gregoiredavid/france-geojson/blob/master/communes.geojson
-    print("Importation des données...")
+    print("Importing data...")
     file = open("data/cities/communes.geojson", encoding="utf-8")
     data = json.load(file)
 
@@ -40,8 +40,9 @@ def create_cities_file():
                  i["geometry"],
                  i["properties"]["code"]])
 
-    print("Ecriture du fichier...")
-    with open('data/cities/cities_output_Valentin.json', 'w', encoding='utf-8') as json_file:
+    print("Writing file...")
+    with open('data/cities/cities_output_Valentin.json', 'w',
+              encoding='utf-8') as json_file:
         json_file.write("[\n")
         compteur = 1
         p_bar = tqdm(total=len(forest_list))
@@ -70,7 +71,7 @@ def create_cities_file():
 
             if j[4][:2] == "2A" or j[4][:2] == "2B":
                 dep = 20
-            else :
+            else:
                 dep = int(j[4][:2])
 
             polygon = {
@@ -113,7 +114,7 @@ def create_cities_file():
 
     p_bar.close()
     file.close()
-    print("Fin d'execution : Aucune erreur")
+    print("End of execution: no error")
     return True
 
 

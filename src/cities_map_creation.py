@@ -9,7 +9,8 @@ MARKER_STYLE = {
 
 MARGE = 0.005
 
-def load_data (path):
+
+def load_data(path):
     '''
     Returns a data_dictionary that contains the data of a json file.
 
@@ -19,22 +20,17 @@ def load_data (path):
         Returns:
                 data_dictionary (dictionary): The json data of the file
     '''
-    try:
-        with open(path, encoding="utf-8") as file:
-            data_dictionary = json.load(file)
-            return data_dictionary
-    except:
-        raise FileNotFoundError from OSError("path not valid in load_data")
+    with open(path, encoding="utf-8") as file:
+        data_dictionary = json.load(file)
+        return data_dictionary
 
 
-
-
-### LOAD THE DATA ###
+# LOAD THE DATA #
 print("Opening data file...")
 data = load_data("data/cities/cities_output_Valentin.json")
 
 
-### CREATE THE MAP AND FOREST POLYGONS  ###
+# CREATE THE MAP AND FOREST POLYGONS  #
 
 # Create the map
 m = folium.Map(location=(46.61, 1.8586), zoom_start=6)
@@ -52,19 +48,20 @@ WANTED_DEPARTEMENTS = [74, 39]
 
 for i in data:
     # TODO : il faut gérer les multi polygons !
-    if i["properties"]["dep"] in WANTED_DEPARTEMENTS and 'shape' in i['geometry'].keys():
+    if i["properties"]["dep"] in WANTED_DEPARTEMENTS and 'shape' \
+                                        in i['geometry'].keys():
         points = []
 
-        shape = folium.Polygon(i["geometry"]["shape"][0],
-                            popup=folium.Popup(i["properties"]["nom"]),
-                            tooltip=i["properties"]["nom"],
-                            style_function=lambda x: marker_style)
-    
+        shape = folium.Polygon(
+                    i["geometry"]["shape"][0],
+                    popup=folium.Popup(i["properties"]["nom"]),
+                    tooltip=i["properties"]["nom"],
+                    style_function=lambda x: marker_style
+                )
+
         shape.add_to(m)
 
-
-
-### SAVING THE MAP ###
+# SAVING THE MAP #
 print("Saving file...")
 m.save("maps/cities_map.html")
 
