@@ -17,12 +17,12 @@ def distance(lat1, lon1, lat2, lon2) -> float:
     # Haversine formula
     a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
     c = 2 * atan2(sqrt(a), sqrt(1-a))
-    d = R * c
+    dist = R * c
 
-    return d
+    return dist
 
 cities = []
-with open("data/cities/cities_output.json", "r", encoding="utf-8") as f:
+with open("data/cities/city_centres.json", "r", encoding="utf-8") as f:
     cities = loads(f.read())
 
 forests = []

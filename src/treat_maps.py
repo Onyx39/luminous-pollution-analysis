@@ -10,11 +10,12 @@ def treat_maps(method:str, output:str):
         gets either the ndvi of luminance of an image
     """
     results = []
-    all_maps = os.listdir(f"data/images/images{method}")
+    base_path = f"data/images/images{method}"
+    all_maps = os.listdir(base_path)
 
     for map_name in tqdm(all_maps):
-        downloads = os.listdir(f"data/images/images{method}/{map_name}/")
-        downloads = [i for i in downloads if os.path.isdir(f"data/images/images{method}/{map_name}/{i}")]
+        downloads = os.listdir(f"{base_path}/{map_name}/")
+        downloads = [i for i in downloads if os.path.isdir(f"{base_path}/{map_name}/{i}")]
 
         values = []
 
@@ -24,7 +25,7 @@ def treat_maps(method:str, output:str):
             result = []
             request = {}
 
-            with open(f"data/images/images{method}/{map_name}/{download}/request.json", "r", encoding="utf-8") as file :
+            with open(f"{base_path}/{map_name}/{download}/request.json", "r", encoding="utf-8") as file :
                 request = loads(file.read())
             time_string = request["request"]["payload"]["input"]["data"][0]["dataFilter"]["timeRange"]["from"]
             date_iso_format = time_string[:10]
@@ -36,7 +37,7 @@ def treat_maps(method:str, output:str):
                 map_coords.append((bbox[0] + bbox[2])/2.0)
                 map_coords.append((bbox[1] + bbox[3])/2.0)
 
-            image = plt.imread(f"data/images/images{method}/{map_name}/{download}/response.jpg")
+            image = plt.imread(f"{base_path}/{map_name}/{download}/response.jpg")
 
             if method == "NDVI":
                 image = (image - 255.0 / 2.0)  / 255.0
@@ -56,7 +57,7 @@ def treat_maps(method:str, output:str):
         file = plt.figure()
         plt.plot(dates, vs, marker='o')
         plt.ylim([-1, 1])
-        plt.savefig(f"data/images/images{method}/{map_name}/{map_name}.png")
+        plt.savefig(f"{base_path}/{map_name}/{map_name}.png")
         plt.close(file)
 
         result = {

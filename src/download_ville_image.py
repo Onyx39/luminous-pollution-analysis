@@ -15,12 +15,10 @@ from constants import config, START_DATE, END_DATE
 from utils import get_bbox_from_geojson
 
 
-logging.basicConfig(filename="downloadCityImages.log", 
+logging.basicConfig(filename="downloadCityImages.log",
                     encoding="utf-8",
                     level=logging.DEBUG,
                     filemode="w")
-
-
 
 # Params
 EVALSCRIPT_PATH = "luminance.js"

@@ -56,8 +56,8 @@ for i in tqdm(range(100)):
         ).get_dates()
 
         for date in tqdm(dates):
-            start_date = date + dt.timedelta(hours=-5)
-            end_date = date + dt.timedelta(hours=5)
+            start_date = date + dt.timedelta(minutes=-5)
+            end_date = date + dt.timedelta(minutes=5)
 
             sentinel_request = SentinelHubRequest(
                 data_folder=folder_name,
