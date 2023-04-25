@@ -1,5 +1,6 @@
+from json import loads
+import logging
 from sentinelhub import (
-    SHConfig,
     CRS,
     BBox,
     DataCollection,
@@ -9,39 +10,37 @@ from sentinelhub import (
     bbox_to_dimensions,
     WebFeatureService,
 )
-import datetime as dt
-from constants import *
+from tqdm import tqdm
+from constants import config, START_DATE, END_DATE
 from utils import get_bbox_from_geojson
-from json import loads
-import logging
 
-logging.basicConfig(filename="downloadCityImages.log", encoding="utf-8", level=logging.DEBUG, filemode="w")
 
-config = SHConfig()
+logging.basicConfig(filename="downloadCityImages.log", 
+                    encoding="utf-8",
+                    level=logging.DEBUG,
+                    filemode="w")
 
-config.instance_id = INSTANCE_ID
-config.sh_client_id = CLIENT_ID
-config.sh_client_secret = USER_SECRET
 
-# Paramètres
-image_type = "imageLUMINANCE"
+
+# Params
 EVALSCRIPT_PATH = "luminance.js"
 MAX_CLOUD_COVERAGE = 0.3
 IMAGE_RESOLUTION = 10
 
 evalscript = ""
-with open("evalscripts/" + EVALSCRIPT_PATH, "r", encoding="utf-8") as f:
+
+with open("src/evalscripts/" + EVALSCRIPT_PATH, "r", encoding="utf-8") as f:
     evalscript = f.read()
 
 all_cities = []
-with open("../data/data_forest/ville.json", "r", encoding="utf-8") as f:
+with open("data/cities/ville.json", "r", encoding="utf-8") as f:
     all_cities = loads(f.read())
 
-for i in range(100):
+for i in tqdm(range(100)):
     city = all_cities[i]
     city_name = city["properties"]["nom"]
     print("City:", city_name)
-    folder_name = image_type + "/" + city_name
+    folder_name = "data/images/imagesLUMINANCE" + "/" + city_name
 
     try:
         boundingbox = get_bbox_from_geojson(city)
@@ -60,7 +59,7 @@ for i in range(100):
             config=config
         ).get_dates()
 
-        for date in dates:
+        for date in tqdm(dates):
             start_date = date.replace(hour=0, minute=0)
             end_date = date.replace(hour=6, minute=0)
 
@@ -84,7 +83,7 @@ for i in range(100):
 
             img = sentinel_request.get_data(save_data=True)
 
-            print(f"Downloaded the image")
+            print("Downloaded the image")
     except TypeError as e:
         print(e)
         logging.error(f"The city {city_name} has several segments")

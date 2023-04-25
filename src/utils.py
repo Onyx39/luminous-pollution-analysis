@@ -1,6 +1,11 @@
-import json
+"""
+    Has some functions used in other files
+"""
 
 def get_bbox_from_geojson(geojson):
+    """
+        Gets a geojson object and returns a bbox (longitude 1, latitude 1, longitude 2, latitude 2)
+    """
     # Initialize the min and max coordinates
     minx, miny, maxx, maxy = float('inf'), float('inf'), float('-inf'), float('-inf')
 
@@ -16,5 +21,5 @@ def get_bbox_from_geojson(geojson):
                 maxx = coord[0]
             if coord[1] > maxy:
                 maxy = coord[1]
-    
+
     return minx, miny, maxx, maxy
