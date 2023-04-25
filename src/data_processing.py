@@ -1,10 +1,11 @@
 import json
+from typing import Callable
 from tqdm import tqdm
 from shapely.geometry import shape
-from typing import Callable
 
 
-def filter(lmbd: Callable, data: list) -> list:
+def forest_filter(lmbd: Callable, data: list) -> list:
+    """Filter forests based on a lambda function"""
     res = []
     for k in data:
         if lmbd(k):
@@ -127,19 +128,10 @@ def write_json(forest_list):
         print("Fin d'execution : Aucune erreur")
 
 
-def main():
-    """Main function"""
-    forest_list = open_forest_file("data/forest/FOR_PUBL_FR.json")
-
-    write_json(forest_list)
-
-
-data = []
 if __name__ == "__main__":
-    main()
-
-    # example of filter
-    # data = open_forest_file("data/data_forest/FOR_PUBL_FR.json")
+    forests = open_forest_file("data/forest/FOR_PUBL_FR.json")
 
     # lmbd = lambda x: x["properties"]["cinse_dep"] == "39"
-    # res = filter(lmbd, data)
+    # forests = forest_filter(lmbd, data)
+
+    write_json(forests)
