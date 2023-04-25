@@ -6,7 +6,7 @@ import json
 # (the first on the page : FOR_PUBL_FR), put in in data_forest
 
 def get_forest_file () : 
-    f = open("data_forest/FOR_PUBL_FR.json")
+    f = open("../data/data_forest/FOR_PUBL_FR.json")
     data = json.load(f)
 
     forest_list = []
@@ -15,7 +15,7 @@ def get_forest_file () :
     for i in data["features"]: 
         forest_list.append([i["properties"]["llib_frt"], i["geometry"]["coordinates"]])
     
-    with open('data_forest/forests.json', 'w', encoding='utf-8') as json_file:
+    with open('../data/data_forest/forests.json', 'w', encoding='utf-8') as json_file:
         for j in forest_list : 
             point_cardinaux = [j[1][0][0][0], j[1][0][0][0], j[1][0][0][1], j[1][0][0][1]]
             for k in j[1][0] : 
