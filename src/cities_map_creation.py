@@ -31,7 +31,7 @@ def load_data (path):
 
 ### LOAD THE DATA ###
 print("Opening data file...")
-data = load_data("data/cities_json/cities_output_Valentin.json")
+data = load_data("data/cities/cities_output_Valentin.json")
 
 
 ### CREATE THE MAP AND FOREST POLYGONS  ###
@@ -66,6 +66,6 @@ for i in data:
 
 ### SAVING THE MAP ###
 print("Saving file...")
-m.save("cities_map.html")
+m.save("maps/cities_map.html")
 
 print("Completion of execution : OK")

@@ -1,9 +1,6 @@
 ########################
 # .gitignore Valentin
 data/*
-FOR_PUBL_FR.json
-simple_map.html
-full_map.html
+maps/*
 .vscode/
-cities_map.html
 ########################

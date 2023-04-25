@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 
 print("Ouverture du fichier...")
-f = open("data_forest/forests.json", encoding='utf-8')
+f = open("data/forest/forests.json", encoding='utf-8')
 data = json.load(f)
 
 
@@ -34,6 +34,6 @@ for i in data:
 p_bar.close()
 
 print("Sauvegarde du fichier...")
-m.save("simple_map.html")
+m.save("maps/simple_map.html")
 
 print("Fin d'execution : Aucune erreur")

@@ -63,7 +63,7 @@ def handle_multipolygon_forest(forest_dictionary):
 
 ### LOAD THE DATA ###
 print("Opening data file...")
-data = load_data("data_forest/forests.json")
+data = load_data("data/forest/forests.json")
 
 
 ### CREATE THE MAP AND FOREST POLYGONS  ###
@@ -96,6 +96,6 @@ p_bar.close()
 
 ### SAVING THE MAP ###
 print("Saving file... (might take a while)")
-m.save("full_map.html")
+m.save("maps/full_map.html")
 
 print("Completion of execution : OK")

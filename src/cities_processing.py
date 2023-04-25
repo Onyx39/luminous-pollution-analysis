@@ -27,7 +27,7 @@ def create_cities_file():
     # Lien du doc de données : 
     # https://github.com/gregoiredavid/france-geojson/blob/master/communes.geojson
     print("Importation des données...")
-    file = open("data/cities_json/communes.geojson", encoding="utf-8")
+    file = open("data/cities/communes.geojson", encoding="utf-8")
     data = json.load(file)
 
     forest_list = []
@@ -41,7 +41,7 @@ def create_cities_file():
                  i["properties"]["code"]])
 
     print("Ecriture du fichier...")
-    with open('data/cities_json/cities_output_Valentin.json', 'w', encoding='utf-8') as json_file:
+    with open('data/cities/cities_output_Valentin.json', 'w', encoding='utf-8') as json_file:
         json_file.write("[\n")
         compteur = 1
         p_bar = tqdm(total=len(forest_list))
