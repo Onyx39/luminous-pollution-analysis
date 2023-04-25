@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
-def treat_images(method:str, output:str):
+def treat_maps(method:str, output:str):
     """ Gets a method NDVI | LUMINANCE and loads all the images and 
         gets either the ndvi of luminance of an image
     """
@@ -71,5 +71,5 @@ def treat_images(method:str, output:str):
 
 
 if __name__ == "__main__":
-    #treat_images("NDVI", "data/forests/forests_ndvi.json")
-    treat_images("LUMINANCE", "data/cities/cities_luminance.json")
+    treat_maps("NDVI", "data/forests/forests_ndvi.json")
+    treat_maps("LUMINANCE", "data/cities/cities_luminance.json")
