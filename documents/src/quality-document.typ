@@ -10,39 +10,57 @@
 #set par(justify: true)
 #show link: underline
 
-= Virtual environment
+= Python 
 
 For this project we will use the version 3.10.9 of python with the official venv module.
 
-Installation
+== Virtual environment
 
+To install the python environment you must ensure to have a version of python 3.10. Run the following command to create a virtual environment to the desired path.
+
+```sh
 python3.10 -m venv /path/to/venv
+```
 
-Activation
+You can then launch the environment with the command source followed by the path of the active file in the venv.
 
+```sh
 source /path/to/venv/bin/active
+```
 
-Installing dependencies
+== Dependencies
 
+In the venv, make sure to install python dependencies before running the project.
+
+```sh
 pip install -r requirements.txt
+```
 
-Updating dependencies
+To update dependencies you can run this command:
 
+```sh
 path/to/venv/bin/python -m pip freeze > requirements.txt
+```
 
 = Linter
 
-Installation
+The linter helps us keeping the code clean, it should idealy be run and the code cleaned before every commit.
 
+If pylint wasn't installed with the requirements you can do it by hand.
+
+```sh
 pip install pylint
+```
 
 If you want to integrate pylint to pycharm:
 
 https://stackoverflow.com/questions/38134086/how-to-run-pylint-with-pycharm
 
-Running
+Run the linter with the following command:
 
+```sh
 pylint [module] or [file] or [directory]
+```
 
 https://pylint.pycqa.org/en/latest/user_guide/usage/run.html
 
@@ -61,19 +79,19 @@ Please lint your code before committing anything.
 
 = Source version control
 
-We use github as a source version control. Here is the link of the project: "https://github.com/Onyx39/luminous-pollution-analysis"
+We use github as a source version control. Here is the link of the project: https://github.com/Onyx39/luminous-pollution-analysis
 
-Commit message
+== Commit message
 
 The team name (e.g what main feature one is working on)  should be inside brackets. Then a small message should explain what changes / fixes have been proposed. 
 
 Each commit should have one purpose, and should be thoroughly explained if otherwise.
 
-Branches
+== Branches
 
 Everything in the main branch should be working, without smell code and errors. To push code in main you have to create a pull request from another branch.
 
-Pull request
+== Pull request
 
 When a branch reaches a level of stability and quality so that it can be merged, pull request is done. At this point, a code review is done by a peer (ie anyone else that didn’t participate in that code) is performed. If the code conforms to the reviewer’s expectation, it is merged. Otherwise, the code shall receive minor updates, or be declined, and it will be the initial developer's duty to make it conform to those expectation
 
@@ -102,12 +120,13 @@ Human resources
     [PRUVOST Jordan], [
         - Extraction of the forest data and processing
         - Gathering cities data
+        - Display cities on the map
     ],
     [PAULIN Maxime], [
         - Helping fetching sentinelle II data with Copernicus API
         - Establishing a github policies
     ],
-    [MALACARNE Etinne], [
+    [MALACARNE Etienne], [
         - Exploration of sentinelle II API
         - Computing NDVI values
         - Computing of the luminance
