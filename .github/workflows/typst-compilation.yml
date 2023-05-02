@@ -21,8 +21,9 @@ jobs:
     steps:
       - name: Setup Typst
         # You may pin to the exact commit or the version.
-        uses: yusancky/setup-typst@a536a0353607acf9faf375a4cc4a869c2d078059
+        uses: yusancky/setup-typst@v1.0.0
         with:
+          token: ${{ github.server_url == 'https://github.com' && github.token || '' }}
           version: latest
           
       - name: Compile documents
