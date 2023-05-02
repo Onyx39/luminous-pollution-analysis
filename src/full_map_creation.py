@@ -1,70 +1,8 @@
-import json
+"""create full forest map. Can handle MultiPolygon."""
 import folium
 from tqdm import tqdm
 
-MARKER_STYLE = {
-        'fillColor': "#00FF00",
-        'color': "#006400",
-        'weight': 1,
-        'fillOpacity': 0.5}
-
-
-def load_data(path):
-    '''
-    Returns a data_dictionary that contains the data of a json file.
-
-        Parameter:
-                path (string) : The file path
-
-        Returns:
-                data_dictionary (dictionary): The json data of the file
-    '''
-    with open(path, encoding="utf-8") as file:
-        data_dictionary = json.load(file)
-        return data_dictionary
-
-
-def handle_polygon_forest(forest_dictionary):
-    '''
-    Returns a polygon that represents a forest.
-
-        Parameter:
-                forest_dictionary (dictionary) : The forest representation
-
-        Returns:
-                polygon (folium.Polygon): The forest representation for the map
-    '''
-    polygon = folium.Polygon(
-                forest_dictionary["geometry"]["shape"][0],
-                popup=folium.Popup(forest_dictionary["properties"]["nom"]),
-                tooltip=forest_dictionary["properties"]["nom"],
-                style_function=lambda x: MARKER_STYLE
-            )
-    return polygon
-
-
-def handle_multipolygon_forest(forest_dictionary):
-    '''
-    Returns a list that contains all the parts of the forest.
-
-        Parameter:
-                forest_dictionary (dictionary) : The forest representation
-
-        Returns:
-                polygon_list (list of folium.Polygon): The forest
-                representation for the map
-    '''
-    polygon_list = []
-    for polygon in forest_dictionary["geometry"]["MultiShape"][0]:
-        polygon = folium.Polygon(
-                    polygon,
-                    popup=folium.Popup(forest_dictionary["properties"]["nom"]),
-                    tooltip=forest_dictionary["properties"]["nom"],
-                    style_function=lambda x: MARKER_STYLE
-                )
-        polygon_list.append(polygon)
-    return polygon_list
-
+from utils import handle_multipolygon_forest, handle_polygon_forest, load_data
 
 # LOAD THE DATA #
 print("Opening data file...")

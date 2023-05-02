@@ -1,7 +1,9 @@
+"""process forest data"""
 import json
 from typing import Callable
 from tqdm import tqdm
 from shapely.geometry import shape
+from utils import reduce_shape, create_polygon, reduce_multi_shape
 
 
 def forest_filter(lmbd: Callable, data: list) -> list:
@@ -10,28 +12,6 @@ def forest_filter(lmbd: Callable, data: list) -> list:
     for k in data:
         if lmbd(k):
             res.append(k)
-    return res
-
-
-def reduce_shape(geometry, ratio=0.001) -> list[list[int]]:
-    """Reduce the number of points of the given shape
-    Returns: a list of coordinates
-    """
-    reduced_shape = geometry.simplify(
-            ratio, preserve_topology=True
-    )
-
-    # Inverting the coordinates
-    return [[c[1], c[0]] for c in reduced_shape.exterior.coords]
-
-
-def reduce_multi_shape(geometry) -> list[list[list[int]]]:
-    """Applies the reduce shape function on a MultiPolygon
-    Returns: a list a reduced shape
-    """
-    res = []
-    for geom in geometry.geoms:
-        res.append(reduce_shape(geom))
     return res
 
 
@@ -44,7 +24,7 @@ def open_forest_file(path):
     return data["features"]
 
 
-def treat_forest_data(forest):
+def process_forest_data(forest):
     """Treat a forest and return a Polygon containing the reduced_shape and a
     square of the forest area"""
     coordinates = forest["geometry"]["coordinates"]
@@ -70,27 +50,7 @@ def treat_forest_data(forest):
         if k[1] > point_cardinaux[3]:
             point_cardinaux[3] = k[1]
 
-    polygon = {
-        "type": "Feature",
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [
-                            [
-                                [point_cardinaux[1],
-                                 point_cardinaux[3]],
-                                [point_cardinaux[0],
-                                 point_cardinaux[3]],
-                                [point_cardinaux[0],
-                                 point_cardinaux[2]],
-                                [point_cardinaux[1],
-                                 point_cardinaux[2]]
-                            ]
-                        ],
-                    },
-                "properties": {
-                    "nom": forest["properties"]["llib_frt"]
-                }
-            }
+    polygon = create_polygon(point_cardinaux, forest["properties"]["llib_frt"])
 
     if forest["geometry"]["type"] == 'MultiPolygon':
         polygon['geometry']['MultiShape'] = [
@@ -114,7 +74,7 @@ def write_json(forest_list):
         p_bar = tqdm(total=len(forest_list))
 
         for forest in forest_list:
-            polygon = treat_forest_data(forest)
+            polygon = process_forest_data(forest)
 
             json.dump(polygon, json_file, ensure_ascii=False)
             count += 1
