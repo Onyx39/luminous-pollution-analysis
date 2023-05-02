@@ -22,7 +22,9 @@ jobs:
       - name: Setup Typst
         # You may pin to the exact commit or the version.
         uses: yusancky/setup-typst@a536a0353607acf9faf375a4cc4a869c2d078059
-      
+        with:
+          version: latest
+          
       - name: Compile documents
         run: |
           cd documents/src
