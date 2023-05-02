@@ -24,6 +24,9 @@ jobs:
             # The token used to authenticate when fetching Typst distributions. When running this action on github.com, the default value is sufficient. When running on GHES, you can pass a personal access token for github.com if you are experiencing rate limiting.
             token: ${{ github.server_url == 'https://github.com' && github.token || '' }}
             # Exact version of Typst to use.
-            version: latest
-      
- 
+            version: 'latest'
+       - name: Compile documents
+         run: |
+           cd documents/src
+           typst compile *
+           mv *.pdf ../pdf
