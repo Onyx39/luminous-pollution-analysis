@@ -14,7 +14,6 @@
 
 For this project we will use the version 3.10.9 of python with the official venv module.
 
-
 == Virtual environment
 
 To install the python environment you must ensure to have a version of python 3.10. Run the following command to create a virtual environment to the desired path.
