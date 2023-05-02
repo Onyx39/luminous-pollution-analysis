@@ -1,0 +1,7 @@
+########################
+# .gitignore Valentin
+data/*
+maps/*
+.vscode/
+__pycache__/
+########################

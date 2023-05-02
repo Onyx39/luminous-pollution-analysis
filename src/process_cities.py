@@ -1,23 +1,10 @@
+"""gen a currated list of cities and their useful props"""
 import json
 import pandas as pd
 
+from utils import load_data
+
 WANTED_DEPARTEMENTS = ["74", "39"]
-
-def load_data (path):
-    '''
-    Returns a data_dictionary that contains the data of a json file.
-
-        Parameter:
-                path (string) : The file path
-        Returns:
-                data_dictionary (dictionary): The json data of the file
-    '''
-    try:
-        with open(path, encoding="utf-8") as file:
-            data_dictionary = json.load(file)
-            return data_dictionary
-    except:
-        raise FileNotFoundError from OSError("path not valid in load_data")
 
 def process_data (dictionary):
     '''
