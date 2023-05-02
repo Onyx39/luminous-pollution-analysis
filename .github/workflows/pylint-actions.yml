@@ -35,5 +35,6 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run pylint
         run: |
+          pip install -r requirements.txt
           pip install pylint
           pylint src
