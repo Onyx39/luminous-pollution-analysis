@@ -26,8 +26,4 @@ jobs:
             # Exact version of Typst to use.
             version: latest
       
-       - name: Compile documents
-         run: |
-           cd documents/src
-           typst compile *
-           mv *.pdf ../pdf
+ 
