@@ -15,18 +15,15 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-        
-      - name: Compile Typst documents
+      - name: Setup Typst
         # You may pin to the exact commit or the version.
-        # uses: Jarivanbakel/typst-action@6962851be1a1a5b9f953723e17bc69bf4b6ccee8
-        uses: Jarivanbakel/typst-action@v3
-        with:
-          # Define the input files that need to be compiled to Typst documents
-          input_files: documents/src/*
-          # The working directory where all the typst files are located
-          working_directory: documents/src/
+        # uses: yusancky/setup-typst@a536a0353607acf9faf375a4cc4a869c2d078059
+        uses: yusancky/setup-typst@v1.0.0
+      
+      - name: Compile documents
+        run: |
+          cd documents/src
+          typst compile *
+          mv *.pdf ../pdf
