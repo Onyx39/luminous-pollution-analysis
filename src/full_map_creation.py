@@ -1,5 +1,6 @@
-import json
+"""create full forest map. Can handle MultiPolygon."""
 import folium
+import json
 import folium.features
 from tqdm import tqdm
 import pandas as pd

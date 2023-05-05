@@ -1,33 +1,13 @@
-import json
+"""plot cities on a map"""
 import folium
-
-MARKER_STYLE = {
-        'fillColor': "#00FF00",
-        'color': "#006400",
-        'weight': 1,
-        'fillOpacity': 0.5}
+from utils import MARKER_STYLE, load_data
 
 MARGE = 0.005
 
 
-def load_data(path):
-    '''
-    Returns a data_dictionary that contains the data of a json file.
-
-        Parameter:
-                path (string) : The file path
-
-        Returns:
-                data_dictionary (dictionary): The json data of the file
-    '''
-    with open(path, encoding="utf-8") as file:
-        data_dictionary = json.load(file)
-        return data_dictionary
-
-
 # LOAD THE DATA #
 print("Opening data file...")
-data = load_data("data/cities/cities_output_Valentin.json")
+data = load_data("data/cities/cities_processing_output.json")
 
 
 # CREATE THE MAP AND FOREST POLYGONS  #
@@ -36,12 +16,6 @@ data = load_data("data/cities/cities_output_Valentin.json")
 m = folium.Map(location=(46.61, 1.8586), zoom_start=6)
 
 print("Creating map objects...")
-
-marker_style = {
-        'fillColor': "#00FF00",
-        'color': "#006400",
-        'weight': 1,
-        'fillOpacity': 0.5}
 
 WANTED_DEPARTEMENTS = [74, 39]
 
@@ -56,12 +30,12 @@ for i in data:
                     i["geometry"]["shape"][0],
                     popup=folium.Popup(i["properties"]["nom"]),
                     tooltip=i["properties"]["nom"],
-                    style_function=lambda x: marker_style
+                    style_function=lambda: MARKER_STYLE
                 )
 
         shape.add_to(m)
 
-# SAVING THE MAP #
+# SAVING THE MAP
 print("Saving file...")
 m.save("maps/cities_map.html")
 

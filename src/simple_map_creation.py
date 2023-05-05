@@ -1,23 +1,16 @@
-import json
+"""create forest map"""
 import folium
 from tqdm import tqdm
 
+from utils import MARKER_STYLE, load_data
 
 print("Ouverture du fichier...")
-f = open("data/forest/forests.json", encoding='utf-8')
-data = json.load(f)
-
+data = load_data("data/forest/foest.json")
 
 # Inversion longitude / latitude
 for i in data:
     for j in i["geometry"]["coordinates"][0]:
         j[0], j[1] = j[1], j[0]
-
-marker_style = {
-        'fillColor': "#00FF00",
-        'color': "#006400",
-        'weight': 1,
-        'fillOpacity': 0.5}
 
 print("Création des objets à placer sur la carte...")
 p_bar = tqdm(total=len(data))
@@ -27,7 +20,7 @@ for i in data:
     shape = folium.Polygon(i["geometry"]["coordinates"],
                            popup=folium.Popup(i["properties"]["nom"]),
                            tooltip=i["properties"]["nom"],
-                           style_function=lambda x: marker_style)
+                           style_function=lambda: MARKER_STYLE)
     shape.add_to(m)
     p_bar.update(1)
 
