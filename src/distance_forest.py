@@ -18,7 +18,7 @@ def distance(latitude1, longitude1, latitude2, longitude2) -> float:
     dlon = longitude2 - longitude1
 
     # Haversine formula
-    comp_a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    comp_a = sin(dlat/2)**2 + cos(latitude1) * cos(latitude2) * sin(dlon/2)**2
     comp_b = 2 * atan2(sqrt(comp_a), sqrt(1-comp_a))
     dist = earth_radius * comp_b
 
