@@ -1,3 +1,7 @@
+""" 
+    Downloads all the images of the cities with custom bands for NDVI
+"""
+
 import datetime as dt
 from json import loads
 import logging
@@ -24,15 +28,15 @@ EVALSCRIPT_PATH = "ndvi.js"
 MAX_CLOUD_COVERAGE = 0.3
 IMAGE_RESOLUTION = 10
 
-evalscript = ""
+EVALSCRIPT = ""
 with open("src/evalscripts/"+EVALSCRIPT_PATH, "r", encoding="utf-8") as f:
-    evalscript = f.read()
+    EVALSCRIPT = f.read()
 
 all_forests = []
 with open("data/forests/forests.json", "r", encoding="utf-8") as f:
     all_forests = loads(f.read())
 
-for i in tqdm(range(100)):
+for i in tqdm(range(len(all_forests))):
     forest = all_forests[i]
     forest_name = forest["properties"]["nom"]
     print("Forest:", forest_name)
@@ -61,7 +65,7 @@ for i in tqdm(range(100)):
 
             sentinel_request = SentinelHubRequest(
                 data_folder=folder_name,
-                evalscript=evalscript,
+                evalscript=EVALSCRIPT,
                 input_data=[
                     SentinelHubRequest.input_data(
                         data_collection=DataCollection.SENTINEL2_L2A,
@@ -78,8 +82,7 @@ for i in tqdm(range(100)):
             )
 
             img = sentinel_request.get_data(save_data=True)
-
-            print("Downloaded the image")
     except TypeError as e:
         print(e)
-        logging.error(f"The forest {forest_name} has several segments")
+        err = f"The forest {forest_name} has several segments"
+        logging.error(err)

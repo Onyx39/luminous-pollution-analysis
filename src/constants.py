@@ -1,3 +1,7 @@
+"""
+All the constants from the project
+"""
+
 from os import getenv
 from dotenv import load_dotenv
 from sentinelhub import (
