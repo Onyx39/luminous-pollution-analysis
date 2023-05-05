@@ -78,4 +78,4 @@ def treat_maps(method:str, output:str):
 
 if __name__ == "__main__":
     treat_maps("NDVI", "data/forests/forests_ndvi.json")
-    # treat_maps("LUMINANCE", "data/cities/cities_luminance.json")
+    treat_maps("LUMINANCE", "data/cities/cities_luminance.json")

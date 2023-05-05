@@ -1,13 +1,16 @@
 """
-    Has some functions used in other files
+Has some functions used in other files
 """
+
 
 def get_bbox_from_geojson(geojson):
     """
-        Gets a geojson object and returns a bbox (longitude 1, latitude 1, longitude 2, latitude 2)
+    Gets a geojson object and returns a bbox
+    (longitude 1, latitude 1, longitude 2, latitude 2)
     """
     # Initialize the min and max coordinates
-    minx, miny, maxx, maxy = float('inf'), float('inf'), float('-inf'), float('-inf')
+    minx, miny = float('inf'), float('inf')
+    maxx, maxy = float('-inf'), float('-inf')
 
     # Loop over the features to find the minimum and maximum coordinates
     if geojson.get('geometry', {}).get('type') == 'Polygon':
