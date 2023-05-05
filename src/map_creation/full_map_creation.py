@@ -1,12 +1,12 @@
 """create full forest map. Can handle MultiPolygon."""
-import folium
 import json
+from datetime import datetime
+from math import floor
+import folium
 import folium.features
 from tqdm import tqdm
 import pandas as pd
-from datetime import datetime
 from colour import Color
-from math import floor
 
 MARKER_STYLE = {
         'fillColor': "#00FF00",
@@ -49,10 +49,10 @@ def get_forest_ndvi(forest_name, forests_ndvi: pd.DataFrame, date) -> float :
     except Exception:
         raise Exception("Forest not found in ndvi file")
     searched_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-    
+
     for i in range(len(forest["date"])):
-        d = datetime.strptime(forest["date"][i], "%Y-%m-%d %H:%M:%S")
-        if d >= searched_date:
+        date = datetime.strptime(forest["date"][i], "%Y-%m-%d %H:%M:%S")
+        if date >= searched_date:
             return forest["ndvi"][i]
 
     raise Exception("Date not found")
@@ -78,7 +78,7 @@ def get_forest_color(ndvi) -> str:
     if ndvi < 0:
         index = floor((ndvi+1) * (len(color_range1)-1))
         color = color_range1[index]
-    else: 
+    else:
         index = floor((ndvi) * (len(color_range2)-1))
         color = color_range2[index]
 
@@ -106,7 +106,7 @@ def handle_polygon_forest(forest_dictionary) -> folium.Polygon:
                 forest_dictionary["geometry"]["shape"][0],
                 popup=folium.Popup(f'{forest_dictionary["properties"]["nom"]} ndvi:{forest_ndvi}'),
                 tooltip = f'{forest_dictionary["properties"]["nom"]} ndvi:{forest_ndvi}',
-                color = color, 
+                color = color,
                 fillColor = color,
             )
 
@@ -140,7 +140,7 @@ def handle_multipolygon_forest(forest_dictionary):
                     polygon,
                     popup=folium.Popup(f'{forest_dictionary["properties"]["nom"]} ndvi:{forest_ndvi}'),
                     tooltip= f'{forest_dictionary["properties"]["nom"]} ndvi:{forest_ndvi}',
-                    color = color, 
+                    color = color,
                     fillColor = color
                 )
         polygon_list.append(polygon)
@@ -167,7 +167,7 @@ for i in data:
     # The forest is a simple polygon
     if "shape" in i["geometry"].keys():
         shape = handle_polygon_forest(i)
-        
+
         shape.add_to(m)
 
     # The forest is a MultiPolygon

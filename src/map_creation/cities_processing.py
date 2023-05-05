@@ -1,8 +1,14 @@
 """Module for gathering lists of cities,
 and output to data/cities/cities_processing_output.json"""
+import os
+import sys
 import json
-from tqdm import tqdm
 from shapely.geometry import shape
+from tqdm import tqdm
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
 from utils import create_polygon, reduce_multi_shape, reduce_shape
 
 

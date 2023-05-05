@@ -1,10 +1,15 @@
 """process forest data"""
 import json
+import os
+import sys
 from typing import Callable
 from tqdm import tqdm
 from shapely.geometry import shape
-from utils import reduce_shape, create_polygon, reduce_multi_shape
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+from utils import reduce_shape, create_polygon, reduce_multi_shape
 
 def forest_filter(lmbd: Callable, data: list) -> list:
     """Filter forests based on a lambda function"""
@@ -67,7 +72,7 @@ def process_forest_data(forest):
 def write_json(forest_list):
     """Write the new json forest"""
     print("Writing the file...")
-    with open('data/forest/forests.json', 'w', encoding='utf-8') as json_file:
+    with open('data/forests/forests.json', 'w', encoding='utf-8') as json_file:
         json_file.write("[\n")
 
         count = 1
@@ -89,7 +94,7 @@ def write_json(forest_list):
 
 
 if __name__ == "__main__":
-    forests = open_forest_file("data/forest/FOR_PUBL_FR.json")
+    forests = open_forest_file("data/forests/FOR_PUBL_FR.json")
 
     lmbd = lambda x: x["properties"]["cinse_dep"] == "23"
     forests = forest_filter(lmbd, forests)

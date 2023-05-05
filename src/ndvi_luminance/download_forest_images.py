@@ -1,7 +1,8 @@
 """
 Downloads all the images of the cities with custom bands for NDVI
 """
-
+import os
+import sys
 import datetime as dt
 from json import loads
 import logging
@@ -17,6 +18,10 @@ from sentinelhub import (
 )
 from tqdm import tqdm
 from constants import config, START_DATE, END_DATE
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
 from utils import get_bbox_from_geojson
 
 logging.basicConfig(filename="downloadForestImages.log",
