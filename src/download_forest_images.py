@@ -1,5 +1,5 @@
-""" 
-    Downloads all the images of the cities with custom bands for NDVI
+"""
+Downloads all the images of the cities with custom bands for NDVI
 """
 
 import datetime as dt

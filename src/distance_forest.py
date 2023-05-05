@@ -10,8 +10,9 @@ def distance(latitude1, longitude1, latitude2, longitude2) -> float:
     earth_radius = 6371
 
     # degree to radians conversion
-    latitude1, longitude1, latitude2, longitude2 = map(radians,
-                                                [latitude1, longitude1, latitude2, longitude2])
+    latitude1, longitude1, latitude2, longitude2 = map(
+            radians, [latitude1, longitude1, latitude2, longitude2]
+            )
 
     # latitude and longitude differences
     dlat = latitude2 - latitude1

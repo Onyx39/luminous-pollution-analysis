@@ -1,5 +1,5 @@
-""" 
-    Downloads all the images of the cities with custom bands
+"""
+Downloads all the images of the cities with custom bands
 """
 
 from json import loads
