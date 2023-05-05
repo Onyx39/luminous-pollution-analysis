@@ -107,7 +107,7 @@ def treat_forest_data(forest):
 def write_json(forest_list):
     """Write the new json forest"""
     print("Writing the file...")
-    with open('forest/forests.json', 'w', encoding='utf-8') as json_file:
+    with open('data/forest/forests.json', 'w', encoding='utf-8') as json_file:
         json_file.write("[\n")
 
         count = 1
@@ -131,7 +131,7 @@ def write_json(forest_list):
 if __name__ == "__main__":
     forests = open_forest_file("data/forest/FOR_PUBL_FR.json")
 
-    # lmbd = lambda x: x["properties"]["cinse_dep"] == "39"
-    # forests = forest_filter(lmbd, data)
+    lmbd = lambda x: x["properties"]["cinse_dep"] == "23"
+    forests = forest_filter(lmbd, forests)
 
     write_json(forests)
