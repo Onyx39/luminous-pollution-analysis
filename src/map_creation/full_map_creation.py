@@ -27,10 +27,13 @@ def get_forest_ndvi(forest_name: str, \
     """
     forest_filter = forests_ndvi["nom"] == forest_name
     forest = forests_ndvi[forest_filter]
+
     try:
         forest = forest.to_dict(orient="records")[0]
+
     except Exception as exc:
         raise ValueError("Forest not found in ndvi file") from exc
+
     searched_date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
 
     for i in range(len(forest["date"])):
