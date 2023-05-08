@@ -1,13 +1,8 @@
 """create forest map"""
-import os
-import sys
 import folium
 from tqdm import tqdm
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-
-from utils import MARKER_STYLE, load_data
+from src.utils import MARKER_STYLE, load_data
 
 print("Ouverture du fichier...")
 data = load_data("data/forest/foest.json")

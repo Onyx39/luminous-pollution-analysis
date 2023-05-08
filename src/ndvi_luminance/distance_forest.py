@@ -46,7 +46,7 @@ for forest in forests:
         latt2 = float(city["latitude"])
         long2 = float(city["longitude"])
         d = distance(latt1, long1, latt2, long2)
-        if CLOSEST_CITY is None or DISTANCE > d:
+        if DISTANCE is None or DISTANCE > d:
             CLOSEST_CITY = city["label"]
             DISTANCE = d
 

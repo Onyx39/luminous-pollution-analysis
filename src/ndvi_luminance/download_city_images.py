@@ -2,26 +2,14 @@
 Downloads all the images of the cities with custom bands
 """
 
-import os
-import sys
 from json import loads
 import logging
-from sentinelhub import (
-    CRS,
-    BBox,
-    DataCollection,
-    MimeType,
-    SentinelHubDownloadClient,
-    SentinelHubRequest,
-    bbox_to_dimensions,
-    WebFeatureService,
-)
-from tqdm import tqdm
-from constants import config, START_DATE, END_DATE
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-from utils import get_bbox_from_geojson
+from tqdm import tqdm
+
+from src.utils import gen_sentinel_req, sentinel_api_setup
+
+from .constants import END_DATE, START_DATE, config
 
 
 logging.basicConfig(filename="downloadCityImages.log",
@@ -50,43 +38,22 @@ for i in tqdm(range(100)):
     folder_name = "data/images/imagesLUMINANCE" + "/" + city_name
 
     try:
-        boundingbox = get_bbox_from_geojson(city)
-
-        bbox = BBox(bbox=boundingbox, crs=CRS.WGS84)
-        box_size = bbox_to_dimensions(bbox, resolution=IMAGE_RESOLUTION)
-
-        download_client = SentinelHubDownloadClient(config=config)
-
-        # Query WFS for available scenes
-        dates = WebFeatureService(
-            bbox=bbox,
-            time_interval=(START_DATE, END_DATE),
-            data_collection=DataCollection.SENTINEL2_L2A,
-            maxcc=MAX_CLOUD_COVERAGE,
-            config=config
-        ).get_dates()
+        (bbox, box_size, download_client, dates) = \
+                sentinel_api_setup((START_DATE, END_DATE), city, \
+                IMAGE_RESOLUTION, config, MAX_CLOUD_COVERAGE)
 
         for date in tqdm(dates):
-            start_date = date.replace(hour=0, minute=0)
-            end_date = date.replace(hour=6, minute=0)
+            if date is None:
+                continue
 
-            sentinel_request = SentinelHubRequest(
-                data_folder=folder_name,
-                evalscript=EVALSCRIPT,
-                input_data=[
-                    SentinelHubRequest.input_data(
-                        data_collection=DataCollection.SENTINEL2_L2A,
-                        time_interval=(str(start_date), str(end_date)),
-                        mosaicking_order='leastCC',
-                    )
-                ],
-                responses=[
-                    SentinelHubRequest.output_response("default", MimeType.JPG)
-                ],
-                bbox=bbox,
-                size=box_size,
-                config=config,
-            )
+            try:
+                START_DATE = date.replace(hour=0, minute=0)
+                END_DATE = date.replace(hour=6, minute=0)
+            except AttributeError: #if hour or mins not in object
+                pass
+
+            sentinel_request = gen_sentinel_req((START_DATE, END_DATE),\
+                    folder_name, EVALSCRIPT, (bbox, box_size), config)
 
             img = sentinel_request.get_data(save_data=True)
 

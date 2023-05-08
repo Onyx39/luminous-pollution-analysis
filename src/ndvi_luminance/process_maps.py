@@ -2,9 +2,10 @@
 Calculates map NDVI and Luminance
 """
 
-import os
-from json import loads, dumps
 from datetime import datetime
+from json import dumps, loads
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
@@ -56,8 +57,26 @@ def process_maps(method: str, output: str):
     with open(output, "w", encoding="utf-8") as file:
         file.write(dumps(results, indent=4, default=str))
 
+def get_date(req):
+    """
+    aux func for compute download
+    parmas:
+        reqs
+    Returns:
+        date
+    """
+
+    time_string = req["request"]["payload"]["input"][
+            "data"][0]["dataFilter"]["timeRange"]["from"]
+    date_iso_format = time_string[:10]
+
+    return datetime.fromisoformat(date_iso_format)
 
 def compute_download(base_path, map_name, download, map_coords, method):
+    """
+    compute downloaded files.
+    """
+    #TODO doc
     result = []
     request = {}
 
@@ -65,11 +84,7 @@ def compute_download(base_path, map_name, download, map_coords, method):
               encoding="utf-8") as file:
         request = loads(file.read())
 
-    time_string = request["request"]["payload"]["input"][
-            "data"][0]["dataFilter"]["timeRange"]["from"]
-    date_iso_format = time_string[:10]
-    date = datetime.fromisoformat(date_iso_format)
-    result.append(date)
+    result.append(get_date(request))
 
     if len(map_coords) == 0:
         bbox = request["request"]["payload"]["input"]["bounds"]["bbox"]
@@ -97,10 +112,10 @@ def compute_download(base_path, map_name, download, map_coords, method):
 
 
 if __name__ == "__main__":
-    ndvi_file = "data/forests/forests_ndvi.json"
-    if os.path.isfile(ndvi_file):
-        process_maps("NDVI", ndvi_file)
+    NDVI_FILE = "data/forests/forests_ndvi.json"
+    if os.path.isfile(NDVI_FILE):
+        process_maps("NDVI", NDVI_FILE)
 
-    luminance_file = "data/cities/cities_luminance.json"
-    if os.path.isfile(luminance_file):
-        process_maps("LUMINANCE", luminance_file)
+    LUMINANCE_FILE = "data/cities/cities_luminance.json"
+    if os.path.isfile(LUMINANCE_FILE):
+        process_maps("LUMINANCE", LUMINANCE_FILE)

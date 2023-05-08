@@ -1,20 +1,19 @@
-"""Module for gathering lists of cities,
-and output to data/cities/cities_processing_output.json"""
-import os
-import sys
+"""
+Module for gathering lists of cities,
+and output to data/cities/cities_processing_output.json
+"""
 import json
+
 from shapely.geometry import shape
 from tqdm import tqdm
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-
-from utils import create_polygon, reduce_multi_shape, reduce_shape
+from src.utils import create_polygon, reduce_multi_shape, reduce_shape
 
 
 def init_coordonates(geometry):
     """Initialize the new coordinates and the list of points to visit
-    Returns: The list of points to visit and the initialisation of the new coordonates
+    Returns: The list of points to visit and the initialisation of the 
+    new coordonates
     """
     coord = geometry["coordinates"]
     if geometry["type"] == "MultiPolygon":
@@ -50,7 +49,9 @@ def create_cities_file():
         cities_list.append([i["properties"], i["geometry"]])
 
     print("Writing file...")
-    with open('data/cities/cities_processing_output.json', 'w',encoding='utf-8') as json_file:
+    with open('data/cities/cities_processing_output.json', 'w', \
+            encoding='utf-8') as json_file:
+
         json_file.write("[\n")
         counter = 1
         p_bar = tqdm(total=len(cities_list))
@@ -77,7 +78,8 @@ def create_cities_file():
             polygon = create_polygon(cardinal_points, prop["nom"], dep)
 
             if geom["type"] == 'MultiPolygon':
-                polygon['geometry']['MultiShape'] = [reduce_multi_shape(shape(geom))]
+                polygon['geometry']['MultiShape'] = \
+                        [reduce_multi_shape(shape(geom))]
 
             else:
                 polygon['geometry']['shape'] = [reduce_shape(shape(geom))]

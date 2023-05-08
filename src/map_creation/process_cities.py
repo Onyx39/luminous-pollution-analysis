@@ -1,13 +1,9 @@
 """gen a currated list of cities and their useful props"""
 import json
-import os
-import sys
+
 import pandas as pd
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-
-from utils import load_data
+from src.utils import load_data
 
 WANTED_DEPARTEMENTS = ["74", "39"]
 

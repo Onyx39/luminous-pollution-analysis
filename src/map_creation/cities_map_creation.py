@@ -1,12 +1,7 @@
 """plot cities on a map"""
-import os
-import sys
 import folium
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-
-from utils import MARKER_STYLE, load_data
+from src.utils import MARKER_STYLE, load_data
 
 MARGE = 0.005
 
