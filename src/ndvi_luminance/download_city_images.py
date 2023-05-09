@@ -47,19 +47,18 @@ for i in tqdm(range(100)):
         for date in tqdm(dates):
             if date is None:
                 continue
-
+            img_start_date = date
+            img_end_date = date
             try:
-                START_DATE = date.replace(hour=0, minute=0)
-                END_DATE = date.replace(hour=6, minute=0)
+                img_start_date = date.replace(hour=0, minute=0)
+                img_end_date = date.replace(hour=6, minute=0)
             except AttributeError: #if hour or mins not in object
                 pass
 
-            sentinel_request = gen_sentinel_req((START_DATE, END_DATE),\
+            sentinel_request = gen_sentinel_req((img_start_date, img_end_date),\
                     folder_name, EVALSCRIPT, (bbox, box_size), config)
 
             img = sentinel_request.get_data(save_data=True)
-
-            print("Downloaded the image")
 
             # Apply median filter
             img_data = img[0]
@@ -71,5 +70,10 @@ for i in tqdm(range(100)):
 
     except TypeError as e:
         print(e)
-        err = f"The forest {city_name} has several segments"
+        err = f"The city {city_name} has several segments"
+        logging.error(err)
+
+    except AttributeError as e :
+        print(e)
+        err = f"The city {city_name} has no geometry"
         logging.error(err)
