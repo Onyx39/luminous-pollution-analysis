@@ -4,7 +4,9 @@ Downloads all the images of the cities with custom bands
 
 from json import loads
 import logging
-
+from skimage.filters import median
+from skimage.io import imsave
+from skimage.morphology import square
 from tqdm import tqdm
 
 from src.utils import gen_sentinel_req, sentinel_api_setup
@@ -18,8 +20,8 @@ logging.basicConfig(filename="downloadCityImages.log",
                     filemode="w")
 
 # Params
-EVALSCRIPT_PATH = "luminance.js"
-MAX_CLOUD_COVERAGE = 0.3
+EVALSCRIPT_PATH = "luminance2.js"
+MAX_CLOUD_COVERAGE = 0.1
 IMAGE_RESOLUTION = 10
 
 EVALSCRIPT = ""
@@ -58,6 +60,15 @@ for i in tqdm(range(100)):
             img = sentinel_request.get_data(save_data=True)
 
             print("Downloaded the image")
+
+            # Apply median filter
+            img_data = img[0]
+            filtered_img = median(img_data, square(7))
+
+            filtered_img_path = folder_name + "/" + city_name + "_filtered.jpg"
+            imsave(filtered_img_path, filtered_img)
+
+
     except TypeError as e:
         print(e)
         err = f"The forest {city_name} has several segments"
