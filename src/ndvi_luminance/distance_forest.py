@@ -56,7 +56,6 @@ for forest in forests:
         "distance": DISTANCE
     })
 
-if __name__ == "__main__":
-    with open("data/forests/cities_forests.json", "w",
-              encoding="utf-8") as file:
-        file.write(dumps(cities_forests, indent=4))
+with open("data/forests/cities_forests.json", "w",
+            encoding="utf-8") as file:
+    file.write(dumps(cities_forests, indent=4))
