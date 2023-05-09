@@ -21,8 +21,8 @@ def process_maps(method: str, output: str):
     all_maps = os.listdir(base_path)
 
     for map_name in tqdm(all_maps):
-        downloads = os.listdir(f"{base_path}/{map_name}/")
-        downloads = [i for i in downloads if os.path.isdir(
+        download_folders = os.listdir(f"{base_path}/{map_name}/")
+        download_folders = [i for i in download_folders if os.path.isdir(
             f"{base_path}/{map_name}/{i}")
             ]
 
@@ -30,9 +30,9 @@ def process_maps(method: str, output: str):
 
         map_coords = []
 
-        for download in downloads:
+        for download_folder in download_folders:
             result = compute_download(
-                    base_path, map_name, download, map_coords, method
+                    base_path, map_name, download_folder, map_coords, method
                     )
             values.append(result)
 
@@ -59,11 +59,11 @@ def process_maps(method: str, output: str):
 
 def get_date(req):
     """
-    aux func for compute download
-    parmas:
-        reqs
+        Gets the date the photo was taken
+    Params:
+        req (dict): The content of the request that was sent to sentinelhub
     Returns:
-        date
+        the date the picture was taken in datetime type
     """
 
     time_string = req["request"]["payload"]["input"][
@@ -72,15 +72,24 @@ def get_date(req):
 
     return datetime.fromisoformat(date_iso_format)
 
-def compute_download(base_path, map_name, download, map_coords, method):
+def compute_download(base_path, map_name, download_folder, map_coords, method):
     """
-    compute downloaded files.
+        Calculates NDVI or LUMINANCE data from forest or city data.
+        Params:
+            base_path (str): the ptah where we can find all the images for all the forests or cities
+            map_name (str): either the name of the forest, or the name of the city
+            download_folder (str): the name of the download folder
+            map_coords (list): a list of coordinates representing the bounding box of a forest
+            method (string): it's either NDVI or LUMINANCE 
+
+        Returns:
+            A 2 elements array with the date of the request and the mean color value of pixels.
+            This value corresponds to either the NDVI or LUMINANCE
     """
-    #TODO doc
     result = []
     request = {}
 
-    with open(f"{base_path}/{map_name}/{download}/request.json", "r",
+    with open(f"{base_path}/{map_name}/{download_folder}/request.json", "r",
               encoding="utf-8") as file:
         request = loads(file.read())
 
@@ -92,17 +101,11 @@ def compute_download(base_path, map_name, download, map_coords, method):
         map_coords.append((bbox[1] + bbox[3])/2.0)
 
     image = plt.imread(
-            f"{base_path}/{map_name}/{download}/response.jpg"
+            f"{base_path}/{map_name}/{download_folder}/response.jpg"
             )
 
     if method == "NDVI":
         image = (image - 255.0 / 2.0) / 255.0
-    elif method == "LUMINANCE":
-        red, green, blue = image[:, :, 0],\
-                           image[:, :, 1],\
-                           image[:, :, 2]
-
-        image = 0.299 * red + 0.587 * green + 0.114 * blue
 
     image_linearized = image.reshape((image.shape[0] * image.shape[1]))
     mean_value = np.mean(image_linearized)
@@ -113,9 +116,9 @@ def compute_download(base_path, map_name, download, map_coords, method):
 
 if __name__ == "__main__":
     NDVI_FILE = "data/forests/forests_ndvi.json"
-    if os.path.isfile(NDVI_FILE):
+    if not os.path.isfile(NDVI_FILE):
         process_maps("NDVI", NDVI_FILE)
 
     LUMINANCE_FILE = "data/cities/cities_luminance.json"
-    if os.path.isfile(LUMINANCE_FILE):
+    if not os.path.isfile(LUMINANCE_FILE):
         process_maps("LUMINANCE", LUMINANCE_FILE)
