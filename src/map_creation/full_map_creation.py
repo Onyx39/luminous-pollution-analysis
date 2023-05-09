@@ -1,6 +1,5 @@
 """create full forest map. Can handle MultiPolygon."""
 from datetime import datetime
-from math import floor
 import folium
 import folium.features
 from tqdm import tqdm
@@ -17,7 +16,7 @@ def get_forest_ndvi(forest_name: str, \
     Returns the forest ndvi for one date
 
     Parameters:
-            forest_name (string) : The forest name
+            forest_name (string): The forest name
             forests_ndvi (Panda Dataframe): The dataset with all the 
                 forests and their ndvi
             date (str): the date in format "YYYY-mm-dd HH-MM-SS"
@@ -37,7 +36,6 @@ def get_forest_ndvi(forest_name: str, \
         tmp = datetime.strptime(forest["date"][i], "%Y-%m-%d %H:%M:%S")
         if tmp >= searched_date:
             return forest["ndvi"][i]
-
     raise ValueError("Date not found")
 
 
@@ -51,20 +49,50 @@ def get_forest_color(ndvi) -> str:
     Returns:
         a color
     """
-    black = Color("black")
-    color_range1 = list(black.range_to("white", 4))
-
-    white = Color("white")
-    color_range2 = list(white.range_to("green", 20))
-
     color = "#000000"
 
-    if ndvi < 0:
-        index = floor((ndvi+1) * (len(color_range1)-1))
-        color = color_range1[index]
-    else:
-        index = floor((ndvi) * (len(color_range2)-1))
-        color = color_range2[index]
+    if ndvi<-0.5:
+        color = Color(rgb=(0.05,0.05,0.05))
+    elif ndvi<-0.2:
+        color = Color(rgb=(0.75,0.75,0.75))
+    elif ndvi<-0.1:
+        color = Color(rgb=(0.86,0.86,0.86))
+    elif ndvi<0:
+        color = Color(rgb=(0.92,0.92,0.92))
+    elif ndvi<0.025:
+        color = Color(rgb=(1,0.98,0.8))
+    elif ndvi<0.05:
+        color = Color(rgb=(0.93,0.91,0.71))
+    elif ndvi<0.075:
+        color = Color(rgb=(0.87,0.85,0.61))
+    elif ndvi<0.1:
+        color = Color(rgb=(0.8,0.78,0.51))
+    elif ndvi<0.125:
+        color = Color(rgb=(0.74,0.72,0.42))
+    elif ndvi<0.15:
+        color = Color(rgb=(0.69,0.76,0.38))
+    elif ndvi<0.175:
+        color = Color(rgb=(0.64,0.8,0.35))
+    elif ndvi<0.2:
+        color = Color(rgb=(0.57,0.75,0.32))
+    elif ndvi<0.25:
+        color = Color(rgb=(0.5,0.7,0.28))
+    elif ndvi<0.3:
+        color = Color(rgb=(0.44,0.64,0.25))
+    elif ndvi<0.35:
+        color = Color(rgb=(0.38,0.59,0.21))
+    elif ndvi<0.4:
+        color = Color(rgb=(0.31,0.54,0.18))
+    elif ndvi<0.45:
+        color = Color(rgb=(0.25,0.49,0.14))
+    elif ndvi<0.5:
+        color = Color(rgb=(0.19,0.43,0.11))
+    elif ndvi<0.55:
+        color = Color(rgb=(0.13,0.38,0.07))
+    elif ndvi<0.6:
+        color = Color(rgb=(0.06,0.33,0.04))
+    else :
+        color = Color(rgb=(0,0.27,0))
 
     return color.hex
 
@@ -74,7 +102,7 @@ def handle_polygon_forest(forest_dictionary) -> folium.Polygon:
     Returns a polygon that represents a forest.
 
         Parameter:
-                forest_dictionary (dictionary) : The forest representation
+                forest_dictionary (dictionary): The forest representation
 
         Returns:
                 polygon (folium.Polygon): The forest representation for the map
@@ -84,7 +112,7 @@ def handle_polygon_forest(forest_dictionary) -> folium.Polygon:
                 data_ndvi, DATE)
         color = get_forest_color(forest_ndvi)
 
-    except Exception:#TODO narrow exc, see other TODO first
+    except ValueError:
         forest_ndvi = "Unknown"
         color = "#7f00ff"
 
@@ -106,7 +134,7 @@ def handle_multipolygon_forest(forest_dictionary):
     Returns a list that contains all the parts of the forest.
 
         Parameter:
-                forest_dictionary (dictionary) : The forest representation
+                forest_dictionary (dictionary): The forest representation
 
         Returns:
                 polygon_list (list of folium.Polygon): The forest
@@ -119,7 +147,7 @@ def handle_multipolygon_forest(forest_dictionary):
                 data_ndvi, DATE)
         color = get_forest_color(forest_ndvi)
 
-    except Exception:#TODO narrow exc, see other TODO first
+    except ValueError:
         forest_ndvi = "Unknown"
         color = "#7f00ff"
 
@@ -142,7 +170,7 @@ def handle_multipolygon_forest(forest_dictionary):
 # LOAD THE DATA #
 print("Opening data file...")
 data = load_data("data/forests/forests.json")
-# TODO where that file from pls
+
 data_ndvi = pd.read_json("data/forests/forests_ndvi.json")
 
 
