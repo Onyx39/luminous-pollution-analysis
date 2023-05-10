@@ -9,10 +9,11 @@ from skimage.filters import median #pylint: disable=no-name-in-module
 from skimage.io import imsave
 from skimage.morphology import square
 from tqdm import tqdm
+from utm.error import OutOfRangeError
 
 from src.utils import gen_sentinel_req, sentinel_api_setup
 
-from .constants import END_DATE, START_DATE, config
+from .constants import END_DATE, START_DATE, config, DEPARTMENT
 
 logging.basicConfig(filename="downloadCityImages.log",
                     encoding="utf-8",
@@ -30,10 +31,12 @@ with open("src/evalscripts/" + EVALSCRIPT_PATH, "r", encoding="utf-8") as f:
     EVALSCRIPT = f.read()
 
 all_cities = []
-with open("data/cities/ville.json", "r", encoding="utf-8") as f:
+with open("data/cities/communes.geojson", "r", encoding="utf-8") as f:
     all_cities = loads(f.read())
+    all_cities = all_cities["features"]
+    all_cities = list(filter(lambda x: x["properties"]["code"].startswith(DEPARTMENT), all_cities))
 
-for i in tqdm(range(100)):
+for i in tqdm(range(len(all_cities))):
     city = all_cities[i]
     city_name = city["properties"]["nom"]
     print("City:", city_name)
@@ -76,4 +79,8 @@ for i in tqdm(range(100)):
     except AttributeError as e :
         print(e)
         err = f"The city {city_name} has no geometry"
+        logging.error(err)
+
+    except OutOfRangeError as e :
+        err = f"The city {city_name} has coordonates out of range"
         logging.error(err)

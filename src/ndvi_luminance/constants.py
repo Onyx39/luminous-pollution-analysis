@@ -17,7 +17,7 @@ USER_SECRET = getenv("USER_SECRET")
 START_DATE = "2023-01-01"  # Year-Month-Day
 END_DATE = "2023-04-01"
 
-POSSIBLE_RESOLUTIONS = [10, 20, 60]
+DEPARTMENT = "74"
 
 config = SHConfig()
 
