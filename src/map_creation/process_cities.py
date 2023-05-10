@@ -5,7 +5,7 @@ import pandas as pd
 
 from src.utils import load_data
 
-WANTED_DEPARTEMENTS = ["74", "39"]
+WANTED_DEPARTEMENTS = ["23"]
 
 def process_data (dictionary):
     '''
@@ -32,7 +32,7 @@ def process_data (dictionary):
 
 ### LOAD THE DATA ###
 print("Opening data file...")
-data = load_data("data/cities_json/cities.json")
+data = load_data("data/cities/cities.json")
 
 ### PROCESS THE DATA ###
 cleaned_dataframe = process_data(data)
@@ -40,7 +40,7 @@ output_json = json.loads(cleaned_dataframe.to_json(orient="records"))
 
 ### SAVE THE FILE ###
 print("Saving file...")
-with open("data/cities_json/cities_output.json", "w", encoding="utf-8") as write_file:
+with open("data/cities/cities_output.json", "w", encoding="utf-8") as write_file:
     json.dump(output_json, write_file, indent=4)
 
 print("Completion of execution : OK")
