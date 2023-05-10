@@ -1,5 +1,9 @@
 # luminous-pollution-analysis
 
+The goal of this project is to study the impact of luminous pollution on forests.
+
+The two main metrics used are the Normalized Difference Vegetation Index (NDVI) and the luminance.
+
 ## Installation
 
 It is required to use python3.10 to run this project.
