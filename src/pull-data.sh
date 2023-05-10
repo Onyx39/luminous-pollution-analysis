@@ -5,7 +5,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
 
 #create and pull data
-mkdir -p ../data/forests ../data/cities
+mkdir -p ../data/forests ../data/cities ../data/images/imagesLUMINANCE ../data/images/imagesNDVI maps
 
 # make that parallel (faster)
 wget -O ../data/cities/output.zip https://www.insee.fr/fr/statistiques/fichier/6683035/ensemble.zip &

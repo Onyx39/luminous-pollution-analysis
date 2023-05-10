@@ -1,33 +1,35 @@
 """create full forest map. Can handle MultiPolygon."""
 import base64
 from datetime import datetime
+from math import floor
+from typing import List
+
 import folium
 import folium.features
-from tqdm import tqdm
 import pandas as pd
 from colour import Color
+from tqdm import tqdm
 
 from src.utils import load_data
 
 WIDTH, HEIGHT, FAT_WH = 300, 300, 1.1
 DATE = "2023-02-13 00:00:00"
 
-def get_forest_ndvi(forest_name: str, \
-        forests_ndvi: pd.DataFrame, date: str) -> float :
+def get_forest_ndvi(forest_name: str, date: str) -> float :
     """
     Returns the forest ndvi for one date
 
     Parameters:
-            forest_name (string): The forest name
-            forests_ndvi (Panda Dataframe): The dataset with all the 
-                forests and their ndvi
-            date (str): the date in format "YYYY-mm-dd HH-MM-SS"
-    
+        forest_name (string): The forest name
+        forests_ndvi (Panda Dataframe): The dataset with all the
+            forests and their ndvi
+        date (str): the date in format "YYYY-mm-dd HH-MM-SS"
+
     Returns:
-            The ndvi of the forest or raises an error if the date is not found
+        The ndvi of the forest or raises an error if the date is not found
     """
-    forest_filter = forests_ndvi["nom"] == forest_name
-    forest = forests_ndvi[forest_filter]
+    forest_filter = data_ndvi["nom"] == forest_name
+    forest = data_ndvi[forest_filter]
     try:
         forest = forest.to_dict(orient="records")[0]
     except Exception as exc:
@@ -40,63 +42,50 @@ def get_forest_ndvi(forest_name: str, \
             return forest["ndvi"][i]
     raise ValueError("Date not found")
 
+def gen_rgb_array(steps: int) -> List[Color]:
+    """
+    gen an array of colors from green to red, with `steps` steps.
+    Param:
+        steps: int
+    returns:
+        the array
+    """
+    res = []
+    for k in range(0,steps):
+        res.append(Color(rgb=((steps - k) / steps, k / steps, 0)))
+    return res
 
-def get_forest_color(ndvi) -> str:
+
+def get_forest_color(ndvi: float, colors: list,
+                     min_value: float, max_value: float) -> str:
     """
     Returns a color for an ndvi
 
     Parameter:
-        ndvi: The ndvi of a forest
-    
+        ndvi (float): The ndvi of a forest
+        colors (list): array of colors, gened w/ gen_rgb_array
+        min (float): min ndvi value
+        max (float): max ndvi value
+
     Returns:
-        a color
+        a color in hex (str)
     """
-    color = "#000000"
+    #rescale max and min
+    min_tmp = min_value + abs((min_value + max_value)) / 6
+    max_tmp = max_value - abs((min_value + max_value)) / 2.5
 
-    if ndvi<-0.5:
-        color = Color(rgb=(0.05,0.05,0.05))
-    elif ndvi<-0.2:
-        color = Color(rgb=(0.75,0.75,0.75))
-    elif ndvi<-0.1:
-        color = Color(rgb=(0.86,0.86,0.86))
-    elif ndvi<0:
-        color = Color(rgb=(0.92,0.92,0.92))
-    elif ndvi<0.025:
-        color = Color(rgb=(1,0.98,0.8))
-    elif ndvi<0.05:
-        color = Color(rgb=(0.93,0.91,0.71))
-    elif ndvi<0.075:
-        color = Color(rgb=(0.87,0.85,0.61))
-    elif ndvi<0.1:
-        color = Color(rgb=(0.8,0.78,0.51))
-    elif ndvi<0.125:
-        color = Color(rgb=(0.74,0.72,0.42))
-    elif ndvi<0.15:
-        color = Color(rgb=(0.69,0.76,0.38))
-    elif ndvi<0.175:
-        color = Color(rgb=(0.64,0.8,0.35))
-    elif ndvi<0.2:
-        color = Color(rgb=(0.57,0.75,0.32))
-    elif ndvi<0.25:
-        color = Color(rgb=(0.5,0.7,0.28))
-    elif ndvi<0.3:
-        color = Color(rgb=(0.44,0.64,0.25))
-    elif ndvi<0.35:
-        color = Color(rgb=(0.38,0.59,0.21))
-    elif ndvi<0.4:
-        color = Color(rgb=(0.31,0.54,0.18))
-    elif ndvi<0.45:
-        color = Color(rgb=(0.25,0.49,0.14))
-    elif ndvi<0.5:
-        color = Color(rgb=(0.19,0.43,0.11))
-    elif ndvi<0.55:
-        color = Color(rgb=(0.13,0.38,0.07))
-    elif ndvi<0.6:
-        color = Color(rgb=(0.06,0.33,0.04))
-    else :
-        color = Color(rgb=(0,0.27,0))
+    min_value, max_value = min_tmp, max_tmp
 
-    return color.hex
+    step_len = (max_value - min_value) / len(colors)
+    idx = floor((ndvi - min_value) / step_len)
+
+    if idx > len(colors) - 1:
+        idx = len(colors) - 1
+
+    elif idx < 0:
+        idx = 0
+
+    return colors[idx].hex
 
 def create_forest_popup (forest_dictionary):
     """
@@ -104,7 +93,7 @@ def create_forest_popup (forest_dictionary):
 
     Parameter:
         forest_dictionnary (dictionary): The forest object
-    
+
     Returns:
         a folium.Popup that contains the graph
     """
@@ -114,15 +103,19 @@ def create_forest_popup (forest_dictionary):
     with open(file_name, 'rb') as graph :
         encoded = base64.b64encode(graph.read())
         svg = """
-        <object data="data:image/jpg;base64,{}" width="{}" height="{} type="image/svg+xml">
+        <object data="data:image/jpg;base64,{}" width="{}" height="{} \
+                type="image/svg+xml">
         </object>""".format
+        width = str(int(WIDTH*FAT_WH)) + "px"
+        height = str(int(HEIGHT*FAT_WH)) + "px"
         iframe = folium.IFrame(svg(encoded.decode('UTF-8'), WIDTH, HEIGHT),
-                            width=WIDTH*FAT_WH, height=HEIGHT*FAT_WH)
+                            width=width, height=height)
 
-        return folium.Popup(iframe, parse_html = True, max_width=1500)
+        return folium.Popup(iframe, parse_html = True,
+                            max_width=str(1500) + "px")
 
 
-def handle_polygon_forest(forest_dictionary) -> folium.Polygon:
+def handle_polygon_forest(forest_dictionary) -> dict:
     """
     Returns a polygon that represents a forest.
 
@@ -134,62 +127,58 @@ def handle_polygon_forest(forest_dictionary) -> folium.Polygon:
     """
     try:
         forest_ndvi = get_forest_ndvi(forest_dictionary["properties"]["nom"], \
-                data_ndvi, DATE)
-        color = get_forest_color(forest_ndvi)
+                DATE)
 
     except ValueError:
         forest_ndvi = "Unknown"
-        color = "#7f00ff"
 
     popup = create_forest_popup(forest_dictionary)
 
-    polygon = folium.Polygon(
-                forest_dictionary["geometry"]["shape"][0],
-                popup=popup,
-                tooltip = f'{forest_dictionary["properties"]["nom"]} \
-                            ndvi:{forest_ndvi}',
-                color = color,
-                fillColor = color,
-            )
+    tmp = {
+            "polygon": forest_dictionary["geometry"]["shape"][0],
+            "name": f'{forest_dictionary["properties"]["nom"]}\
+                        ndvi:{forest_ndvi}',
+            "ndvi": forest_ndvi,
+            "popup": popup
+         }
 
-    return polygon
+    return tmp
 
 
-def handle_multipolygon_forest(forest_dictionary):
+def handle_multipolygon_forest(forest_dictionary: dict):
     """
     Returns a list that contains all the parts of the forest.
 
-        Parameter:
-                forest_dictionary (dictionary): The forest representation
+    Parameter:
+        forest_dictionary (dictionary): The forest representation
 
-        Returns:
-                polygon_list (list of folium.Polygon): The forest
-                representation for the map
+    Returns:
+        polygon_list (list of folium.Polygon): The forest
+        representation for the map
     """
     polygon_list = []
 
     try:
         forest_ndvi = get_forest_ndvi(forest_dictionary["properties"]["nom"],\
-                data_ndvi, DATE)
-        color = get_forest_color(forest_ndvi)
+                DATE)
 
     except ValueError:
         forest_ndvi = "Unknown"
-        color = "#7f00ff"
 
     for polygon in forest_dictionary["geometry"]["MultiShape"][0]:
 
         popup = create_forest_popup(forest_dictionary)
 
-        polygon = folium.Polygon(
-                    polygon,
-                    popup=popup,
-                    tooltip= f'{forest_dictionary["properties"]["nom"]}\
-                            ndvi:{forest_ndvi}',
-                    color = color,
-                    fillColor = color
-                )
-        polygon_list.append(polygon)
+
+        tmp = {
+                "polygon": polygon,
+                "name": f'{forest_dictionary["properties"]["nom"]}\
+                        ndvi:{forest_ndvi}',
+                "ndvi": forest_ndvi,
+                "popup": popup
+            }
+        polygon_list.append(tmp)
+
     return polygon_list
 
 
@@ -203,31 +192,59 @@ data_ndvi = pd.read_json("data/forests/forests_ndvi.json")
 # CREATE THE MAP AND FOREST POLYGONS  #
 
 # Create the map
-m = folium.Map(location=(46.61, 1.8586), zoom_start=6)
+m = folium.Map(location=(46.61, 1.8586), zoom_start=6, \
+        tiles="CartoDB dark_matter")
 
 print("Creating map objects...")
 
 # Display a progress bar
-p_bar = tqdm(total=len(data_forests))
+p_bar_compute = tqdm(total=len(data_forests))
 
-for k in data_forests:
+# list storing polygons parameters before constructing them
+# useful for list colors (need max / min)
+list_pre_polygons = []
+ndvi_min, ndvi_max = 999, -999 # init very low / high for ndvi
+
+for item in data_forests:
     # The forest is a simple polygon
-    if "shape" in k["geometry"].keys():
-        shape = handle_polygon_forest(k)
-
-        shape.add_to(m)
+    if "shape" in item["geometry"].keys():
+        poly_info = handle_polygon_forest(item)
+        list_pre_polygons.append(poly_info)
+        ndvi_max = max(ndvi_max, poly_info["ndvi"])
+        ndvi_min = min(ndvi_min, poly_info["ndvi"])
 
     # The forest is a MultiPolygon
     else:
-        shapes = handle_multipolygon_forest(k)
-        for shape in shapes:
-            shape.add_to(m)
+        list_res = handle_multipolygon_forest(item)
+        for item in list_res:
+            list_pre_polygons.append(item)
+            ndvi_max = max(ndvi_max, item["ndvi"])
+            ndvi_min = min(ndvi_min, item["ndvi"])
 
     # Update the progress bar
-    p_bar.update(1)
+    p_bar_compute.update(1)
 
 # Close the progress bar
-p_bar.close()
+p_bar_compute.close()
+
+p_bar_polygons = tqdm(total=len(data_forests))
+color_array = gen_rgb_array(20)
+
+for poly in list_pre_polygons:
+    color = get_forest_color(poly["ndvi"], color_array, ndvi_min, ndvi_max)
+
+    shape = folium.Polygon(
+                poly["polygon"],
+                popup=poly["popup"],
+                tooltip = poly["name"],
+                color = color,
+                fillColor = color
+                )
+    shape.add_to(m)
+
+    p_bar_polygons.update(1)
+
+p_bar_polygons.close()
 
 # SAVING THE MAP #
 print("Saving file... (might take a while)")

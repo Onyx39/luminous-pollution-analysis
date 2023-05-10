@@ -2,9 +2,10 @@
 Downloads all the images of the cities with custom bands
 """
 
-from json import loads
 import logging
-from skimage.filters import median
+from json import loads
+
+from skimage.filters import median #pylint: disable=no-name-in-module
 from skimage.io import imsave
 from skimage.morphology import square
 from tqdm import tqdm
@@ -12,7 +13,6 @@ from tqdm import tqdm
 from src.utils import gen_sentinel_req, sentinel_api_setup
 
 from .constants import END_DATE, START_DATE, config
-
 
 logging.basicConfig(filename="downloadCityImages.log",
                     encoding="utf-8",
