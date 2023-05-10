@@ -18,6 +18,7 @@ pip install -r requirements.txt
 
 ## Scripts featured in the project
 
+```sh
 src
 ├── 📁 evalscripts                    SentinelleHub scripts
 ├── 📁 map_creation
@@ -35,6 +36,7 @@ src
 │   └── process_maps                  Compute NDVI and Luminance
 ├── pull-data                         Pull needed data
 └── utils
+```
 
 ## Data sources
 
