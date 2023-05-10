@@ -27,7 +27,7 @@ def distance(latitude1, longitude1, latitude2, longitude2) -> float:
 
 
 cities = []
-with open("data/cities/city_centres.json", "r", encoding="utf-8") as f:
+with open("data/cities/cities_output.json", "r", encoding="utf-8") as f:
     cities = loads(f.read())
 
 forests = []
