@@ -1,11 +1,12 @@
 """create full forest map. Can handle MultiPolygon."""
 from datetime import datetime
 from math import floor
+
 import folium
 import folium.features
-from tqdm import tqdm
 import pandas as pd
 from colour import Color
+from tqdm import tqdm
 
 from src.utils import load_data
 
@@ -150,7 +151,6 @@ data_ndvi = pd.read_json("data/forests/forests_ndvi.json")
 
 
 # CREATE THE MAP AND FOREST POLYGONS  #
-
 # Create the map
 m = folium.Map(location=(46.61, 1.8586), zoom_start=6)
 

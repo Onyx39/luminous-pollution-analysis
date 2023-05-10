@@ -113,9 +113,9 @@ def compute_download(base_path, map_name, download, map_coords, method):
 
 if __name__ == "__main__":
     NDVI_FILE = "data/forests/forests_ndvi.json"
-    if os.path.isfile(NDVI_FILE):
+    if not os.path.isfile(NDVI_FILE):
         process_maps("NDVI", NDVI_FILE)
 
     LUMINANCE_FILE = "data/cities/cities_luminance.json"
-    if os.path.isfile(LUMINANCE_FILE):
+    if not os.path.isfile(LUMINANCE_FILE):
         process_maps("LUMINANCE", LUMINANCE_FILE)
