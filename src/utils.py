@@ -3,7 +3,6 @@ this module is for general data processing.
 It is usefull since we have to do a lot of the same data manipulation.
 """
 from datetime import date
-from datetime import date
 import json
 from typing import Any, List
 import folium
@@ -108,7 +107,6 @@ def load_data(path) -> dict:
 
 def handle_polygon_forest(forest_dictionary):
     """
-    """
     Returns a polygon that represents a forest.
 
         Parameter:
@@ -116,7 +114,6 @@ def handle_polygon_forest(forest_dictionary):
 
         Returns:
                 polygon (folium.Polygon): The forest representation for the map
-    """
     """
     polygon = folium.Polygon(
                 forest_dictionary["geometry"]["shape"][0],
@@ -129,7 +126,6 @@ def handle_polygon_forest(forest_dictionary):
 
 def handle_multipolygon_forest(forest_dictionary):
     """
-    """
     Returns a list that contains all the parts of the forest.
 
         Parameter:
@@ -138,7 +134,6 @@ def handle_multipolygon_forest(forest_dictionary):
         Returns:
                 polygon_list (list of folium.Polygon): The forest
                 representation for the map
-    """
     """
     polygon_list = []
     for polygon in forest_dictionary["geometry"]["MultiShape"][0]:
@@ -152,7 +147,7 @@ def handle_multipolygon_forest(forest_dictionary):
 
 
 def reduce_shape(geometry, ratio=0.001) -> list[list[int]]:
-    """Reduce the number of points of the given shape
+    """
     Returns: a list of coordinates
     """
     reduced_shape = geometry.simplify(
@@ -202,30 +197,6 @@ def create_polygon(cardinal_points:list, name:str, dep=None) -> dict:
         polygon["properties"]["dep"] = dep
 
     return polygon
-
-def get_bbox_from_geojson(geojson):
-    """
-    Gets a geojson object and returns a bbox
-    (longitude 1, latitude 1, longitude 2, latitude 2)
-    """
-    # Initialize the min and max coordinates
-    minx, miny = float('inf'), float('inf')
-    maxx, maxy = float('-inf'), float('-inf')
-
-    # Loop over the features to find the minimum and maximum coordinates
-    if geojson.get('geometry', {}).get('type') == 'Polygon':
-        coords = geojson['geometry']['coordinates'][0]
-        for coord in coords:
-            if coord[0] < minx:
-                minx = coord[0]
-            if coord[1] < miny:
-                miny = coord[1]
-            if coord[0] > maxx:
-                maxx = coord[0]
-            if coord[1] > maxy:
-                maxy = coord[1]
-
-    return minx, miny, maxx, maxy
 
 def get_bbox_from_geojson(geojson):
     """

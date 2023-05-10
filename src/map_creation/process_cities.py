@@ -5,9 +5,7 @@ import json
 import pandas as pd
 
 from src.utils import load_data
-from src.utils import load_data
 
-WANTED_DEPARTEMENTS = ["23"]
 WANTED_DEPARTEMENTS = ["23"]
 
 def process_data (dictionary):
@@ -37,7 +35,6 @@ def process_data (dictionary):
 
 ### LOAD THE DATA ###
 print("Opening data file...")
-data = load_data("data/cities/cities.json")
 data = load_data("data/cities/cities.json")
 
 ### PROCESS THE DATA ###
