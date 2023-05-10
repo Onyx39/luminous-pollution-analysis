@@ -5,7 +5,7 @@ from tqdm import tqdm
 from src.utils import MARKER_STYLE, load_data
 
 print("Ouverture du fichier...")
-data = load_data("data/forest/foest.json")
+data = load_data("data/forests/forests.json")
 
 # Inversion longitude / latitude
 for i in data:

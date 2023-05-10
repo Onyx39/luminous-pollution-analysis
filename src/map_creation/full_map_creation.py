@@ -1,4 +1,5 @@
 """create full forest map. Can handle MultiPolygon."""
+import base64
 from datetime import datetime
 import folium
 import folium.features
@@ -8,6 +9,7 @@ from colour import Color
 
 from src.utils import load_data
 
+WIDTH, HEIGHT, FAT_WH = 300, 300, 1.1
 DATE = "2023-02-13 00:00:00"
 
 def get_forest_ndvi(forest_name: str, \
@@ -96,6 +98,29 @@ def get_forest_color(ndvi) -> str:
 
     return color.hex
 
+def create_forest_popup (forest_dictionary):
+    """
+    Returns a popup that contains a graph of the evolutoin of NDVI for a forest
+
+    Parameter:
+        forest_dictionnary (dictionary): The forest object
+    
+    Returns:
+        a folium.Popup that contains the graph
+    """
+
+    forest_name = forest_dictionary["properties"]["nom"]
+    file_name = f"data/images/imagesNDVI/{forest_name}/{forest_name}.png"
+    with open(file_name, 'rb') as graph :
+        encoded = base64.b64encode(graph.read())
+        svg = """
+        <object data="data:image/jpg;base64,{}" width="{}" height="{} type="image/svg+xml">
+        </object>""".format
+        iframe = folium.IFrame(svg(encoded.decode('UTF-8'), WIDTH, HEIGHT),
+                            width=WIDTH*FAT_WH, height=HEIGHT*FAT_WH)
+
+        return folium.Popup(iframe, parse_html = True, max_width=1500)
+
 
 def handle_polygon_forest(forest_dictionary) -> folium.Polygon:
     """
@@ -116,12 +141,13 @@ def handle_polygon_forest(forest_dictionary) -> folium.Polygon:
         forest_ndvi = "Unknown"
         color = "#7f00ff"
 
+    popup = create_forest_popup(forest_dictionary)
+
     polygon = folium.Polygon(
                 forest_dictionary["geometry"]["shape"][0],
-                popup=folium.Popup(f'{forest_dictionary["properties"]["nom"]}\
-                        ndvi:{forest_ndvi}'),
+                popup=popup,
                 tooltip = f'{forest_dictionary["properties"]["nom"]} \
-                        ndvi:{forest_ndvi}',
+                            ndvi:{forest_ndvi}',
                 color = color,
                 fillColor = color,
             )
@@ -153,11 +179,11 @@ def handle_multipolygon_forest(forest_dictionary):
 
     for polygon in forest_dictionary["geometry"]["MultiShape"][0]:
 
+        popup = create_forest_popup(forest_dictionary)
+
         polygon = folium.Polygon(
                     polygon,
-                    popup=folium.Popup(
-                        f'{forest_dictionary["properties"]["nom"]}\
-                                ndvi:{forest_ndvi}'),
+                    popup=popup,
                     tooltip= f'{forest_dictionary["properties"]["nom"]}\
                             ndvi:{forest_ndvi}',
                     color = color,
@@ -169,7 +195,7 @@ def handle_multipolygon_forest(forest_dictionary):
 
 # LOAD THE DATA #
 print("Opening data file...")
-data = load_data("data/forests/forests.json")
+data_forests = load_data("data/forests/forests.json")
 
 data_ndvi = pd.read_json("data/forests/forests_ndvi.json")
 
@@ -182,9 +208,9 @@ m = folium.Map(location=(46.61, 1.8586), zoom_start=6)
 print("Creating map objects...")
 
 # Display a progress bar
-p_bar = tqdm(total=len(data))
+p_bar = tqdm(total=len(data_forests))
 
-for k in data:
+for k in data_forests:
     # The forest is a simple polygon
     if "shape" in k["geometry"].keys():
         shape = handle_polygon_forest(k)
