@@ -1,9 +1,8 @@
-########################
 data/*
 maps/*
 .vscode/
 __pycache__
 venv/
 .env
-.log
-########################
+*.log
+logs/

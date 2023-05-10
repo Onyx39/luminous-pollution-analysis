@@ -45,10 +45,10 @@ for i in tqdm(range(len(all_forests))):
             if date is None:
                 continue
 
-            start = date + dt.timedelta(minutes=-5)
-            END_DATE = date + dt.timedelta(minutes=5)
+            start_date = date + dt.timedelta(minutes=-5)
+            end_date = date + dt.timedelta(minutes=5)
 
-            sentinel_request = gen_sentinel_req((START_DATE, END_DATE),\
+            sentinel_request = gen_sentinel_req((start_date, end_date),\
                     folder_name, EVALSCRIPT, (bbox, box_size), config)
 
 
