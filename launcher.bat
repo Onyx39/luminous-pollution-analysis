@@ -24,17 +24,8 @@ if not errorlevel 1 goto WAIT
 
 echo Downloading forests and cities images...
 
-REM Start the first process
-start "" /B cmd /C "python -m src.ndvi_luminance.download_city_images > logs\download_city_images.log"
-
-REM Start the second process
-start "" /B cmd /C "python -m src.ndvi_luminance.download_forets_images > logs\download_forets_images.log "
-
-REM Wait for both processes to finish
-:WAIT
-timeout /T 1 >nul
-tasklist | find /i "python" >nul
-if not errorlevel 1 goto WAIT
+python -m src.ndvi_luminance.download_city_images > logs\download_city_images.log
+python -m src.ndvi_luminance.download_forest_images > logs\download_forets_images.log 
 
 echo Processing images...
 
