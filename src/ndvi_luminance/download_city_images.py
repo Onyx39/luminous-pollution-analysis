@@ -4,6 +4,7 @@ Downloads all the images of the cities with custom bands
 
 import logging
 from json import loads
+from datetime import datetime as dt
 
 from skimage.filters import median #pylint: disable=no-name-in-module
 from skimage.io import imsave
@@ -54,7 +55,8 @@ for i in tqdm(range(len(all_cities))):
             img_end_date = date
             try:
                 img_start_date = date.replace(hour=0, minute=0)
-                img_end_date = date.replace(hour=6, minute=0)
+                img_start_date = date + dt.timedelta(hours=-9)
+                img_end_date = date.replace(hour=0, minute=0)
             except AttributeError: #if hour or mins not in object
                 pass
 
@@ -65,7 +67,7 @@ for i in tqdm(range(len(all_cities))):
 
             # Apply median filter
             img_data = img[0]
-            filtered_img = median(img_data, square(7))
+            filtered_img = median(img_data, square(3))
 
             filtered_img_path = folder_name + "/" + city_name + "_filtered.jpg"
             imsave(filtered_img_path, filtered_img)
