@@ -4,6 +4,7 @@ Downloads all the images of the cities with custom bands
 
 import logging
 from json import loads
+from datetime import datetime as dt
 
 from skimage.filters import median #pylint: disable=no-name-in-module
 from skimage.io import imsave
@@ -34,8 +35,7 @@ all_cities = []
 with open("data/cities/communes.geojson", "r", encoding="utf-8") as f:
     all_cities = loads(f.read())
     all_cities = all_cities["features"]
-    all_cities = list(filter(lambda x: x["properties"]["code"]\
-            .startswith(DEPARTMENT), all_cities))
+    all_cities = list(filter(lambda x: x["properties"]["code"].startswith(DEPARTMENT), all_cities))
 
 for i in tqdm(range(len(all_cities))):
     city = all_cities[i]
@@ -55,18 +55,19 @@ for i in tqdm(range(len(all_cities))):
             img_end_date = date
             try:
                 img_start_date = date.replace(hour=0, minute=0)
-                img_end_date = date.replace(hour=6, minute=0)
+                img_start_date = date + dt.timedelta(hours=-9)
+                img_end_date = date.replace(hour=0, minute=0)
             except AttributeError: #if hour or mins not in object
                 pass
 
-            sentinel_request = gen_sentinel_req((img_start_date, img_end_date),
+            sentinel_request = gen_sentinel_req((img_start_date, img_end_date),\
                     folder_name, EVALSCRIPT, (bbox, box_size), config)
 
             img = sentinel_request.get_data(save_data=True)
 
             # Apply median filter
             img_data = img[0]
-            filtered_img = median(img_data, square(7))
+            filtered_img = median(img_data, square(3))
 
             filtered_img_path = folder_name + "/" + city_name + "_filtered.jpg"
             imsave(filtered_img_path, filtered_img)
