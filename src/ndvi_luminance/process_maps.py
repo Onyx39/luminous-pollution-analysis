@@ -76,14 +76,18 @@ def compute_download(base_path, map_name, download_folder, map_coords, method):
     """
         Calculates NDVI or LUMINANCE data from forest or city data.
         Params:
-            base_path (str): the ptah where we can find all the images for all the forests or cities
-            map_name (str): either the name of the forest, or the name of the city
+            base_path (str): the ptah where we can find all the images for all
+                the forests or cities
+            map_name (str): either the name of the forest, or the name of
+                the city
             download_folder (str): the name of the download folder
-            map_coords (list): a list of coordinates representing the bounding box of a forest
+            map_coords (list): a list of coordinates representing the bounding
+                box of a forest
             method (string): it's either NDVI or LUMINANCE 
 
         Returns:
-            A 2 elements array with the date of the request and the mean color value of pixels.
+            A 2 elements array with the date of the request and the mean color
+                value of pixels.
             This value corresponds to either the NDVI or LUMINANCE
     """
     result = []

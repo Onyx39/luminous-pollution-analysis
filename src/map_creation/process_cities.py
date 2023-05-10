@@ -20,11 +20,13 @@ def process_data (dictionary):
     cities_dataframe = pd.DataFrame(dictionary["cities"])
 
     # Filter by departements
-    cities_filter = cities_dataframe["department_number"].isin(WANTED_DEPARTEMENTS)
+    cities_filter = cities_dataframe["department_number"]\
+            .isin(WANTED_DEPARTEMENTS)
     cities_dataframe = cities_dataframe[cities_filter]
 
     # Remove unusefull columns
-    columns=["insee_code", "city_code", "department_name", "region_name", "region_geojson_name"]
+    columns=["insee_code", "city_code", "department_name", "region_name", \
+            "region_geojson_name"]
     cities_dataframe = cities_dataframe.drop(columns=columns)
 
     return cities_dataframe
@@ -40,7 +42,8 @@ output_json = json.loads(cleaned_dataframe.to_json(orient="records"))
 
 ### SAVE THE FILE ###
 print("Saving file...")
-with open("data/cities/cities_output.json", "w", encoding="utf-8") as write_file:
+with open("data/cities/cities_output.json", "w", encoding="utf-8")\
+        as write_file:
     json.dump(output_json, write_file, indent=4)
 
 print("Completion of execution : OK")

@@ -4,8 +4,9 @@ It is usefull since we have to do a lot of the same data manipulation.
 """
 from datetime import date
 import json
-from typing import Any
+from typing import Any, List
 import folium
+from sentinelhub.api.base_request import InputDataDict
 from sentinelhub.api.process import SentinelHubRequest
 from sentinelhub.api.wfs import WebFeatureService
 from sentinelhub.constants import CRS, MimeType, MosaickingOrder
@@ -36,7 +37,7 @@ def fetch_sentinel_dates(dates: tuple[date|str, date|str], bbox,
         config=config
     ).get_dates()
 
-def gen_sentinel_input(start_date, end_date):
+def gen_sentinel_input(start_date, end_date) -> List[InputDataDict]:
     """
     retunrs input data for sentinelhub reqs
     """
@@ -48,14 +49,17 @@ def gen_sentinel_input(start_date, end_date):
         )
     ]
 
-def gen_sentinel_req(dates: tuple[date|str, date|str], folder_name: str,
-                     evalscript, box: tuple[Any, tuple[int, int]], config: Any):
+def gen_sentinel_req(dates: tuple[date|str, date|str],
+                     folder_name: str,
+                     evalscript,
+                     box: tuple[Any, tuple[int, int]],
+                     config: Any):
     """performs a req on sentinelhub"""
     tmp = gen_sentinel_input(dates[0], dates[1])
     return SentinelHubRequest(
         data_folder=folder_name,
         evalscript=evalscript,
-        input_data=tmp, #python ? cant convert List to list :)
+        input_data=tmp,
         responses=[
             SentinelHubRequest.output_response("default", MimeType.JPG)
         ],
@@ -68,7 +72,7 @@ def gen_sentinel_req(dates: tuple[date|str, date|str], folder_name: str,
 def sentinel_api_setup(dates: tuple[date|str, date|str], location:Any, res:int,
                        config:Any, max_cloud_coverage: float):
     """
-    setup everything and makes sent api calls. Useful for 
+    setup everything and makes sent api calls. Useful for
     dwn_forest and dwn_cities
     """
     boundingbox = get_bbox_from_geojson(location)
@@ -134,10 +138,10 @@ def handle_multipolygon_forest(forest_dictionary):
     polygon_list = []
     for polygon in forest_dictionary["geometry"]["MultiShape"][0]:
         polygon = folium.Polygon(polygon,
-                    popup=folium.Popup(forest_dictionary["properties"]["nom"]),
-                    tooltip=forest_dictionary["properties"]["nom"],
-                    style_function=lambda: MARKER_STYLE
-                )
+                popup=folium.Popup(forest_dictionary["properties"]["nom"]),
+                tooltip=forest_dictionary["properties"]["nom"],
+                style_function=lambda: MARKER_STYLE
+            )
         polygon_list.append(polygon)
     return polygon_list
 

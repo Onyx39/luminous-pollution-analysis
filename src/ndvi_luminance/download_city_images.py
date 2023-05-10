@@ -34,7 +34,8 @@ all_cities = []
 with open("data/cities/communes.geojson", "r", encoding="utf-8") as f:
     all_cities = loads(f.read())
     all_cities = all_cities["features"]
-    all_cities = list(filter(lambda x: x["properties"]["code"].startswith(DEPARTMENT), all_cities))
+    all_cities = list(filter(lambda x: x["properties"]["code"]\
+            .startswith(DEPARTMENT), all_cities))
 
 for i in tqdm(range(len(all_cities))):
     city = all_cities[i]
@@ -58,7 +59,7 @@ for i in tqdm(range(len(all_cities))):
             except AttributeError: #if hour or mins not in object
                 pass
 
-            sentinel_request = gen_sentinel_req((img_start_date, img_end_date),\
+            sentinel_request = gen_sentinel_req((img_start_date, img_end_date),
                     folder_name, EVALSCRIPT, (bbox, box_size), config)
 
             img = sentinel_request.get_data(save_data=True)
