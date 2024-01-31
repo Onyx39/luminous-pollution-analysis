@@ -3,7 +3,7 @@
 ])
 
 #align(center, text(12pt, rgb(38, 38, 38))[
-    Damien DASSEUX - Etienne MALACARNE - Andrew MARY HUET DE BAROCHEZ- Maxime PAULIN - Valentin RICHARD - Jordan PRUVOST
+    Damien DASSEUX - Etienne MALACARNE - Andrew MARY HUET DE BAROCHEZ- Violette PAULIN - Valentin RICHARD - Jordan PRUVOST
 ])
 
 #set heading(numbering: "1.")
@@ -122,7 +122,7 @@ Human resources
         - Gathering cities data
         - Display cities on the map
     ],
-    [PAULIN Maxime], [
+    [PAULIN Violette], [
         - Helping fetching sentinelle II data with Copernicus API
         - Establishing a github policies
     ],
